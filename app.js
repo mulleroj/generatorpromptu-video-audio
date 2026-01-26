@@ -129,6 +129,7 @@ const artStyles = {
 
 const buildPrompt = () => {
   const mediaType = getValue("mediaType");
+  console.log("Building prompt for mediaType:", mediaType);
   const topic = getValue("topic");
   const duration = getValue("duration");
   const language = getValue("outputLanguage");
@@ -328,7 +329,14 @@ const updateOutput = () => {
     output.value = "Vyplňte téma a vygenerujte prompt.";
     return;
   }
-  output.value = buildPrompt();
+  try {
+    const prompt = buildPrompt();
+    console.log("Generated prompt:", prompt);
+    output.value = prompt;
+  } catch (error) {
+    console.error("Error generating prompt:", error);
+    output.value = "Chyba při generování promptu. Zkontrolujte konzoli prohlížeče.";
+  }
 };
 
 // Event listeners
