@@ -368,6 +368,12 @@ const buildPrompt = () => {
       }
     }
     
+    // ROLE LOCK blok
+    const roleLockLines = buildRoleLockBlock(speaker1, speaker2);
+    if (roleLockLines.length > 0) {
+      lines.push(...roleLockLines);
+    }
+    
     // Vyvážení rolí mluvčích
     const speakerBalance = getValue("speakerBalance");
     const structureLevel = getValue("structureLevel");
@@ -574,12 +580,103 @@ window.updatePersonalityInfo = (speakerNum) => {
   }
 };
 
+// Toggle pro ROLE LOCK options
+window.toggleRoleLockOptions = () => {
+  const enabled = getChecked("roleLockEnabled");
+  const options = document.getElementById("roleLockOptions");
+  if (options) {
+    options.classList.toggle("hidden", !enabled);
+  }
+};
+
+// Generování ROLE LOCK bloku pro prompt
+const buildRoleLockBlock = (speaker1Name, speaker2Name) => {
+  const roleLockEnabled = getChecked("roleLockEnabled");
+  if (!roleLockEnabled) return [];
+  
+  const speaker1gender = getValue("speaker1gender");
+  const speaker2gender = getValue("speaker2gender");
+  const enforceGenderForms = getChecked("enforceGenderForms");
+  const preventRoleSwitch = getChecked("preventRoleSwitch");
+  const autoCorrectRole = getChecked("autoCorrectRole");
+  
+  const lines = [];
+  lines.push("");
+  lines.push("=== ROLE A HLAS (ZÁVAZNÉ) ===");
+  lines.push("");
+  
+  // Mluvčí 1
+  const name1 = speaker1Name || "Mluvčí 1";
+  if (speaker1gender === "male") {
+    lines.push(`- ${name1} je MUŽ.`);
+    lines.push(`  Mluví výhradně MUŽSKÝM hlasem a z MUŽSKÉ perspektivy.`);
+    lines.push(`  Používá důsledně mužské rodové tvary (řekl, udělal, byl jsem...).`);
+  } else if (speaker1gender === "female") {
+    lines.push(`- ${name1} je ŽENA.`);
+    lines.push(`  Mluví výhradně ŽENSKÝM hlasem a z ŽENSKÉ perspektivy.`);
+    lines.push(`  Používá důsledně ženské rodové tvary (řekla, udělala, byla jsem...).`);
+  }
+  if (preventRoleSwitch) {
+    lines.push(`  Nikdy nepřebírá roli, hlas ani perspektivu ostatních mluvčích.`);
+  }
+  lines.push("");
+  
+  // Mluvčí 2
+  const name2 = speaker2Name || "Mluvčí 2";
+  if (speaker2gender === "male") {
+    lines.push(`- ${name2} je MUŽ.`);
+    lines.push(`  Mluví výhradně MUŽSKÝM hlasem a z MUŽSKÉ perspektivy.`);
+    lines.push(`  Používá důsledně mužské rodové tvary (řekl, udělal, byl jsem...).`);
+  } else if (speaker2gender === "female") {
+    lines.push(`- ${name2} je ŽENA.`);
+    lines.push(`  Mluví výhradně ŽENSKÝM hlasem a z ŽENSKÉ perspektivy.`);
+    lines.push(`  Používá důsledně ženské rodové tvary (řekla, udělala, byla jsem...).`);
+  }
+  if (preventRoleSwitch) {
+    lines.push(`  Nikdy nepřebírá roli, hlas ani perspektivu ostatních mluvčích.`);
+  }
+  lines.push("");
+  
+  // Globální pravidla
+  lines.push("GLOBÁLNÍ PRAVIDLA ROLE LOCK:");
+  lines.push("- Každý mluvčí musí po celou dobu audia dodržovat svou identitu, hlas a jazykové tvary.");
+  lines.push("- Mluvčí si nesmí přebírat repliky, role ani vypravěčskou perspektivu.");
+  lines.push("- Každá replika musí být jasně přiřazena jednomu mluvčímu.");
+  
+  if (enforceGenderForms) {
+    lines.push("- V češtině VŽDY používej správné rodové tvary podle pohlaví mluvčího.");
+    lines.push("- Kontroluj shodu podmětu a přísudku (on řekl / ona řekla).");
+  }
+  
+  if (autoCorrectRole) {
+    lines.push("");
+    lines.push("AUTOMATICKÁ SEBEKOREKCE:");
+    lines.push("- Pokud by došlo k porušení role (špatný rod, hlas nebo perspektiva),");
+    lines.push("  okamžitě se vrať k poslední správné replice a pokračuj správně v dané roli.");
+  }
+  
+  return lines;
+};
+
 const updateOutput = () => {
   const topic = getValue("topic");
   if (!topic) {
     output.value = "Vyplňte téma a vygenerujte prompt.";
     return;
   }
+  
+  // Validace ROLE LOCK - pohlaví musí být vyplněno
+  const mediaType = getValue("mediaType");
+  const roleLockEnabled = getChecked("roleLockEnabled");
+  if (mediaType === "Audio" && roleLockEnabled) {
+    const speaker1gender = getValue("speaker1gender");
+    const speaker2gender = getValue("speaker2gender");
+    if (!speaker1gender || !speaker2gender) {
+      output.value = "⚠️ ROLE LOCK je zapnutý, ale nemáte vyplněné pohlaví mluvčích.\n\nPro správné fungování ROLE LOCK vyplňte pohlaví obou mluvčích, nebo vypněte ROLE LOCK.";
+      return;
+    }
+  }
+  
   try {
     const prompt = buildPrompt();
     console.log("Generated prompt:", prompt);

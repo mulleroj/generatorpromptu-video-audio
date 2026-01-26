@@ -227,6 +227,57 @@
               </div>
             </div>
             
+            <!-- ROLE LOCK MODUL -->
+            <div class="role-lock-section">
+              <label style="font-weight: 600; margin-top: 1rem; display: block;">
+                🔒 ROLE LOCK (Hlas a identita mluvčích)
+              </label>
+              <p class="helper" style="margin-top: 0.5rem;">
+                💡 ROLE LOCK je jazykový zámek identity. Neřídí syntetický hlas, ale výrazně stabilizuje role v NotebookLM Audio.
+              </p>
+              
+              <label class="checkbox-label" title="Zabrání prohození hlasů. Každý mluvčí má pevně dané pohlaví, perspektivu a jazykové tvary.">
+                <input type="checkbox" id="roleLockEnabled" name="roleLockEnabled" checked onchange="toggleRoleLockOptions()" />
+                <strong>Pevně uzamknout role a hlasy mluvčích</strong>
+              </label>
+              
+              <div id="roleLockOptions">
+                <div class="row">
+                  <label>
+                    Pohlaví mluvčího 1
+                    <select id="speaker1gender" name="speaker1gender" required>
+                      <option value="">-- Vyberte pohlaví --</option>
+                      <option value="male">Muž</option>
+                      <option value="female">Žena</option>
+                    </select>
+                  </label>
+                  <label>
+                    Pohlaví mluvčího 2
+                    <select id="speaker2gender" name="speaker2gender" required>
+                      <option value="">-- Vyberte pohlaví --</option>
+                      <option value="male">Muž</option>
+                      <option value="female">Žena</option>
+                    </select>
+                  </label>
+                </div>
+                
+                <div class="checkbox-group">
+                  <label class="checkbox-label" title="Model musí používat správné mužské/ženské tvary sloves a přídavných jmen.">
+                    <input type="checkbox" id="enforceGenderForms" name="enforceGenderForms" checked />
+                    Vynutit rodové tvary podle pohlaví (čeština)
+                  </label>
+                  <label class="checkbox-label" title="Mluvčí nesmí přebírat perspektivu, styl ani hlas druhého.">
+                    <input type="checkbox" id="preventRoleSwitch" name="preventRoleSwitch" checked />
+                    Zakázat přebírání role mezi mluvčími
+                  </label>
+                  <label class="checkbox-label" title="Pokud model poruší roli, má se sám opravit a pokračovat správně.">
+                    <input type="checkbox" id="autoCorrectRole" name="autoCorrectRole" checked />
+                    Automatická sebekorekce při porušení role
+                  </label>
+                </div>
+              </div>
+            </div>
+            
             <label>
               Kontext/Scénář rozhovoru
               <textarea id="audioContext" name="audioContext" placeholder="Např. Dva mimozemšťané reagují na pozemský podcast. Právě zachytili přenos a komentují ho..."></textarea>
