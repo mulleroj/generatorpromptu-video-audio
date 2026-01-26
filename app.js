@@ -259,7 +259,7 @@ const buildPrompt = () => {
   if (!isVideo) {
     lines.push("SPECIFIKA PRO AUDIO:");
     lines.push("- Nepoužívej odkazy na vizuály.");
-    lines.push("- Neříkej „jak vidíte na obrázku".");
+    lines.push("- Neříkej 'jak vidíte na obrázku'.");
     lines.push("- Struktura musí být zřetelná i bez vizuální opory.");
     lines.push("");
   }
