@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NotebookLM Video & Audio Prompt Builder</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container">
+        <p class="kicker">Video & Audio Prompt Builder</p>
+        <h1>Generátor promptů pro NotebookLM Studio</h1>
+        <p class="subtitle">
+          Vytvořte prompt pro video nebo audio. Zvolte základní parametry a styl — zbytek se doplní automaticky.
+        </p>
+      </div>
+    </header>
+
+    <main class="container">
+      <form id="promptForm" class="card">
+        
+        <!-- 1. ZÁKLADY -->
+        <div class="section">
+          <h2>1. Základy</h2>
+          
+          <div class="media-toggle">
+            <input type="radio" id="mediaVideo" name="mediaType" value="Video" checked onchange="
+              document.querySelectorAll('.video-only').forEach(el => el.classList.remove('is-hidden'));
+              document.querySelectorAll('.audio-only').forEach(el => el.classList.add('is-hidden'));
+              if(window.updateOutput) updateOutput();
+            ">
+            <label for="mediaVideo">🎥 Video</label>
+            
+            <input type="radio" id="mediaAudio" name="mediaType" value="Audio" onchange="
+              document.querySelectorAll('.video-only').forEach(el => el.classList.add('is-hidden'));
+              document.querySelectorAll('.audio-only').forEach(el => el.classList.remove('is-hidden'));
+              if(window.updateOutput) updateOutput();
+            ">
+            <label for="mediaAudio">🎙️ Audio</label>
+          </div>
+          
+          <div class="row">
+            
+            <label>
+              Délka *
+              <select id="duration" name="duration" required>
+                <option value="2-3 min">2-3 min</option>
+                <option value="3-5 min">3-5 min</option>
+                <option value="5-8 min">5-8 min</option>
+                <option value="8-10 min">8-10 min</option>
+                <option value="10-12 min">10-12 min</option>
+                <option value="12-15 min">12-15 min</option>
+              </select>
+            </label>
+            
+            <label>
+              Jazyk *
+              <select id="outputLanguage" name="outputLanguage" required>
+                <option value="Čeština">Čeština</option>
+                <option value="Slovenština">Slovenština</option>
+                <option value="Angličtina">Angličtina</option>
+                <option value="Němčina">Němčina</option>
+              </select>
+            </label>
+          </div>
+          
+          <label>
+            Hlavní téma *
+            <input type="text" id="topic" name="topic" placeholder="Např. Jak funguje elektromobil" required />
+          </label>
+          
+          <div class="row">
+            <label>
+              Cílová skupina
+              <select id="targetGroup" name="targetGroup">
+                <option value="Žáci ZŠ">Žáci ZŠ</option>
+                <option value="Žáci SŠ">Žáci SŠ</option>
+                <option value="Dospělí" selected>Dospělí</option>
+                <option value="Odborníci">Odborníci</option>
+                <option value="Veřejnost">Veřejnost</option>
+              </select>
+            </label>
+            
+            <label>
+              Úroveň hloubky
+              <select id="depthLevel" name="depthLevel">
+                <option value="Zjednodušená">Zjednodušená</option>
+                <option value="Střední" selected>Střední</option>
+                <option value="Expertní">Expertní</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. STYL A VYPRÁVĚNÍ -->
+        <div class="section">
+          <h2>2. Styl a vyprávění</h2>
+          
+          <label>
+            Styl vyprávění
+            <select id="narrationStyle" name="narrationStyle">
+              <option value="Vysvětlující učitelský styl">Vysvětlující učitelský styl</option>
+              <option value="Popularizační styl">Popularizační styl</option>
+              <option value="Příběhový (storytelling)">Příběhový (storytelling)</option>
+              <option value="Dialogický styl">Dialogický styl</option>
+              <option value="Mentorský / koučovací styl">Mentorský / koučovací styl</option>
+              <option value="Analytický styl">Analytický styl</option>
+              <option value="Esejistický styl">Esejistický styl</option>
+              <option value="Kritický / polemický styl">Kritický / polemický styl</option>
+              <option value="Faktografický dokumentární styl">Faktografický dokumentární styl</option>
+              <option value="Ironický / jemně humorný styl">Ironický / jemně humorný styl</option>
+              <option value="Empatický styl">Empatický styl</option>
+              <option value="Provokativní styl">Provokativní styl</option>
+              <option value="Shrnovací / revizní styl">Shrnovací / revizní styl</option>
+            </select>
+          </label>
+          <div id="narrationStyleInfo" class="style-info">
+            <strong>Charakter:</strong> Klidný, strukturovaný, srozumitelný. Ideální pro výuku a metodické materiály.
+          </div>
+          
+          <div class="row">
+            <label>
+              Tón
+              <select id="narrationTone" name="narrationTone">
+                <option value="Neutrální">Neutrální</option>
+                <option value="Lidský a přátelský">Lidský a přátelský</option>
+                <option value="Energický">Energický</option>
+                <option value="Vážný">Vážný</option>
+              </select>
+            </label>
+            
+            <label>
+              Tempo
+              <select id="pacing" name="pacing">
+                <option value="Pomalé, s pauzami">Pomalé, s pauzami</option>
+                <option value="Střední" selected>Střední</option>
+                <option value="Svižné">Svižné</option>
+              </select>
+            </label>
+          </div>
+          
+          <!-- Mluvčí - jen pro audio -->
+          <div class="audio-only is-hidden">
+            <label style="font-weight: 600; margin-top: 0.5rem; display: block;">
+              Jména/role mluvčích (volitelné)
+            </label>
+            <div class="row">
+              <label>
+                Mluvčí 1
+                <input type="text" id="speaker1" name="speaker1" placeholder="Např. Alex, Učitel, Expert..." />
+              </label>
+              <label>
+                Mluvčí 2
+                <input type="text" id="speaker2" name="speaker2" placeholder="Např. Marie, Student, Tazatel..." />
+              </label>
+            </div>
+            <p class="helper">💡 Pokud nevyplníte, NotebookLM použije anonymní hlasy. Pokud vyplníte, můžete ovlivnit charakter rozhovoru.</p>
+          </div>
+          
+          <!-- Vizuální styl - jen pro video -->
+          <div class="video-only">
+            <label>
+              Vizuální styl
+              <select id="visualStyle" name="visualStyle" onchange="document.getElementById('artStyleWrapper').style.display = (this.value === 'Umělecký (vlastní)') ? 'block' : 'none'; if(window.updateOutput) updateOutput();">
+                <option value="Automatický">Automatický</option>
+                <option value="Minimalistický">Minimalistický</option>
+                <option value="Ilustrační">Ilustrační</option>
+                <option value="Retro / papírový">Retro / papírový</option>
+                <option value="Technický / Bauhaus">Technický / Bauhaus</option>
+                <option value="Umělecký (vlastní)">Umělecký (vlastní)</option>
+              </select>
+            </label>
+            
+            <!-- Umělecký styl - jen když je vybrán "Umělecký (vlastní)" -->
+            <div id="artStyleWrapper" class="sub-field" style="display:none;">
+              <label>
+                Umělecký styl
+                <select id="artStyle" name="artStyle">
+                  <option value="Frida Kahlo – expresivní symbolismus">Frida Kahlo – expresivní symbolismus</option>
+                  <option value="Vincent van Gogh – dynamická expresivita">Vincent van Gogh – dynamická expresivita</option>
+                  <option value="Pablo Picasso (kubismus) – analytická perspektiva">Pablo Picasso (kubismus) – analytická perspektiva</option>
+                  <option value="René Magritte – surrealistický koncept">René Magritte – surrealistický koncept</option>
+                  <option value="Alfons Mucha – secesní didaktika">Alfons Mucha – secesní didaktika</option>
+                  <option value="Středověká iluminace / kronika">Středověká iluminace / kronika</option>
+                  <option value="Edward Hopper – civilní realismus">Edward Hopper – civilní realismus</option>
+                  <option value="Technický modernismus / Bauhaus">Technický modernismus / Bauhaus</option>
+                </select>
+              </label>
+              <p id="artStyleInfo" class="helper"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. STRUKTURA -->
+        <div class="section">
+          <h2>3. Struktura</h2>
+          
+          <div class="row">
+            <label>
+              Členění
+              <select id="structure" name="structure">
+                <option value="Úvod – kapitoly – shrnutí">Úvod – kapitoly – shrnutí</option>
+                <option value="Úvod – kapitoly – výzva k akci">Úvod – kapitoly – výzva k akci</option>
+                <option value="Rovnou do obsahu, shrnutí na konci">Rovnou do obsahu, shrnutí na konci</option>
+              </select>
+            </label>
+            
+            <label>
+              Přechody mezi částmi
+              <select id="transitions" name="transitions">
+                <option value="Plynulé">Plynulé</option>
+                <option value="Výrazně oddělené">Výrazně oddělené</option>
+                <option value="Slovní signály">Slovní signály („Teď se podíváme na…")</option>
+              </select>
+            </label>
+          </div>
+          
+          <div class="row">
+            <label>
+              Shrnutí na konci
+              <select id="summaryAtEnd" name="summaryAtEnd">
+                <option value="Ano">Ano</option>
+                <option value="Ne">Ne</option>
+              </select>
+            </label>
+            
+            <label class="video-only">
+              Poměr stran
+              <select id="aspectRatio" name="aspectRatio">
+                <option value="16:9 (YouTube)">16:9 (YouTube)</option>
+                <option value="9:16 (Shorts/mobil)">9:16 (Shorts/mobil)</option>
+                <option value="1:1 (sociální sítě)">1:1 (sociální sítě)</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. OBSAH A ZAMĚŘENÍ -->
+        <div class="section">
+          <h2>4. Obsah a zaměření</h2>
+          
+          <label>
+            Na co se zaměřit (volitelné)
+            <textarea id="focusOn" name="focusOn" rows="2" placeholder="Např. klíčové pojmy, praktické příklady, hlavní výhody"></textarea>
+          </label>
+          
+          <label>
+            Co vynechat (volitelné)
+            <textarea id="omit" name="omit" rows="2" placeholder="Např. historické detaily, technické vzorce, vedlejší témata"></textarea>
+          </label>
+          
+          <label>
+            Dodatečné instrukce (volitelné)
+            <textarea id="notes" name="notes" rows="2" placeholder="Např. použij příklady z praxe, vysvětli pojmy, přidej analogie"></textarea>
+          </label>
+        </div>
+
+        <!-- POKROČILÉ NASTAVENÍ -->
+        <details class="section advanced">
+          <summary>Pokročilé nastavení</summary>
+          
+          <div class="advanced-content">
+            <div class="row">
+              <label>
+                Práce se zdroji
+                <select id="sourceHandling" name="sourceHandling">
+                  <option value="Použij pouze přiložené zdroje">Pouze přiložené zdroje</option>
+                  <option value="Můžeš shrnout a zjednodušit">Shrnout a zjednodušit</option>
+                  <option value="Uveď zdroje v závěru">Uvést zdroje v závěru</option>
+                </select>
+              </label>
+              
+              <label>
+                Míra opakování
+                <select id="repetitionLevel" name="repetitionLevel">
+                  <option value="Nízká">Nízká</option>
+                  <option value="Střední" selected>Střední</option>
+                  <option value="Vyšší (pro výuku)">Vyšší (pro výuku)</option>
+                </select>
+              </label>
+            </div>
+            
+            <div class="video-only">
+              <div class="row">
+                <label>
+                  Barevnost
+                  <select id="colorTone" name="colorTone">
+                    <option value="Automatická">Automatická</option>
+                    <option value="Tlumená">Tlumená</option>
+                    <option value="Kontrastní">Kontrastní</option>
+                    <option value="Pastelová">Pastelová</option>
+                  </select>
+                </label>
+                
+                <label>
+                  Styl obrázků
+                  <select id="imageStyle" name="imageStyle">
+                    <option value="Ilustrace">Ilustrace</option>
+                    <option value="Diagramy">Diagramy</option>
+                    <option value="Archivní">Archivní</option>
+                  </select>
+                </label>
+              </div>
+              
+              <label>
+                Co se nesmí objevit
+                <input type="text" id="forbiddenElements" name="forbiddenElements" placeholder="Např. stock fotky, abstraktní tvary, generické pozadí" />
+              </label>
+            </div>
+            
+            <div class="inline-group">
+              <label><input type="checkbox" id="explainTerms" /> Vysvětlovat pojmy</label>
+              <label><input type="checkbox" id="useExamples" checked /> Používat příklady</label>
+              <label><input type="checkbox" id="useAnalogies" /> Používat analogie</label>
+            </div>
+          </div>
+        </details>
+
+        <div class="actions">
+          <button type="submit" class="primary">Generovat prompt</button>
+          <button type="button" class="ghost" id="resetBtn">Reset</button>
+        </div>
+      </form>
+
+      <section class="card output">
+        <header>
+          <h2>Vygenerovaný prompt</h2>
+          <p>Zkopírujte a vložte do NotebookLM Studio.</p>
+        </header>
+        <textarea id="promptOutput" rows="16" readonly></textarea>
+        <div class="actions">
+          <button type="button" id="copyBtn" class="secondary">Kopírovat</button>
+          <span id="copyStatus" class="status" aria-live="polite"></span>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
