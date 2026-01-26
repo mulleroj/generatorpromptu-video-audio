@@ -143,19 +143,54 @@
           <!-- Mluvčí - jen pro audio -->
           <div class="audio-only is-hidden">
             <label style="font-weight: 600; margin-top: 0.5rem; display: block;">
-              Jména/role mluvčích (volitelné)
+              Mluvčí (volitelné)
             </label>
             <div class="row">
               <label>
-                Mluvčí 1
-                <input type="text" id="speaker1" name="speaker1" placeholder="Např. Alex, Učitel, Expert..." />
+                Mluvčí 1 - Jméno/Role
+                <input type="text" id="speaker1" name="speaker1" placeholder="Např. Xyrr, Alex, Moderátor..." />
               </label>
               <label>
-                Mluvčí 2
-                <input type="text" id="speaker2" name="speaker2" placeholder="Např. Marie, Student, Tazatel..." />
+                Mluvčí 2 - Jméno/Role
+                <input type="text" id="speaker2" name="speaker2" placeholder="Např. Kael, Marie, Host..." />
               </label>
             </div>
-            <p class="helper">💡 Pokud nevyplníte, NotebookLM použije anonymní hlasy. Pokud vyplníte, můžete ovlivnit charakter rozhovoru.</p>
+            <div class="row">
+              <label>
+                Osobnost mluvčího 1
+                <input type="text" id="speaker1personality" name="speaker1personality" placeholder="Např. cynický, starší, zkušený..." />
+              </label>
+              <label>
+                Osobnost mluvčího 2
+                <input type="text" id="speaker2personality" name="speaker2personality" placeholder="Např. impulzivní, mladší, energický..." />
+              </label>
+            </div>
+            
+            <label>
+              Kontext/Scénář rozhovoru
+              <textarea id="audioContext" name="audioContext" placeholder="Např. Dva mimozemšťané reagují na pozemský podcast. Právě zachytili přenos a komentují ho..."></textarea>
+            </label>
+            
+            <label>
+              Inspirace stylem (oddělte čárkou)
+              <input type="text" id="styleInspiration" name="styleInspiration" placeholder="Např. Rick and Morty, Stopařův průvodce po Galaxii, George Carlin..." />
+            </label>
+            
+            <label style="font-weight: 600; margin-top: 1rem; display: block;">
+              Pokročilé audio nastavení
+            </label>
+            <div class="row">
+              <label>
+                <input type="checkbox" id="allowVulgarity" name="allowVulgarity" />
+                Povolit vulgarismy a drsný humor
+              </label>
+              <label>
+                <input type="checkbox" id="allowOverlap" name="allowOverlap" />
+                Překrývání hlasů, smích, spontánnost
+              </label>
+            </div>
+            
+            <p class="helper">💡 Tyto pokročilé volby umožní vytvoření velmi autentického a živého rozhovoru pro dospělé publikum.</p>
           </div>
           
           <!-- Vizuální styl - jen pro video -->

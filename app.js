@@ -184,16 +184,58 @@ const buildPrompt = () => {
   lines.push(`- Tón: ${narrationTone}`);
   lines.push(`- Tempo: ${pacing}`);
   
-  // Jména mluvčích (jen pro audio)
+  // Detaily mluvčích a scénář (jen pro audio)
   if (!isVideo) {
     const speaker1 = getValue("speaker1");
     const speaker2 = getValue("speaker2");
-    if (speaker1 || speaker2) {
+    const speaker1personality = getValue("speaker1personality");
+    const speaker2personality = getValue("speaker2personality");
+    const audioContext = getValue("audioContext");
+    const styleInspiration = getValue("styleInspiration");
+    const allowVulgarity = getChecked("allowVulgarity");
+    const allowOverlap = getChecked("allowOverlap");
+    
+    if (speaker1 || speaker2 || audioContext) {
       lines.push("");
-      lines.push("MLUVČÍ:");
-      if (speaker1) lines.push(`- Mluvčí 1: ${speaker1}`);
-      if (speaker2) lines.push(`- Mluvčí 2: ${speaker2}`);
-      lines.push("  → Use these names/roles consistently throughout the conversation.");
+      lines.push("MLUVČÍ A SCÉNÁŘ:");
+      
+      if (speaker1) {
+        lines.push(`- Mluvčí 1: ${speaker1}`);
+        if (speaker1personality) {
+          lines.push(`  Osobnost: ${speaker1personality}`);
+        }
+      }
+      
+      if (speaker2) {
+        lines.push(`- Mluvčí 2: ${speaker2}`);
+        if (speaker2personality) {
+          lines.push(`  Osobnost: ${speaker2personality}`);
+        }
+      }
+      
+      if (audioContext) {
+        lines.push(`- Kontext: ${audioContext}`);
+      }
+      
+      if (styleInspiration) {
+        lines.push(`- Inspirace: ${styleInspiration}`);
+      }
+      
+      lines.push("  → Maintain character consistency and dynamic throughout.");
+    }
+    
+    // Pokročilá audio nastavení
+    if (allowVulgarity || allowOverlap) {
+      lines.push("");
+      lines.push("AUDIO STYL:");
+      if (allowVulgarity) {
+        lines.push("- Vulgarisms, sarcasm and raw humor are fully allowed.");
+        lines.push("- Target audience: adults 18+ only.");
+      }
+      if (allowOverlap) {
+        lines.push("- Include natural spontaneity: laughter, voice overlaps, pauses, reactions.");
+        lines.push("- Make dialogue sound authentic and unscripted.");
+      }
     }
   }
   
