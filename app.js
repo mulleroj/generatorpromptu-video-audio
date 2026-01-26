@@ -10,6 +10,11 @@ const getValue = (id) => {
     const checked = document.querySelector('input[name="mediaType"]:checked');
     return checked ? checked.value : "Video";
   }
+  // Speciální případ pro speakerBalance (radio buttons)
+  if (id === "speakerBalance") {
+    const checked = document.querySelector('input[name="speakerBalance"]:checked');
+    return checked ? checked.value : "speaker1_leads";
+  }
   const el = document.getElementById(id);
   return el ? el.value.trim() : "";
 };
@@ -311,7 +316,6 @@ const buildPrompt = () => {
     const literaryStyle = getValue("literaryStyle");
     const filmStyle = getValue("filmStyle");
     const styleInspiration = getValue("styleInspiration");
-    const allowVulgarity = getChecked("allowVulgarity");
     const allowOverlap = getChecked("allowOverlap");
     
     const personality1 = speakerPersonalities[speaker1personality];
@@ -364,18 +368,69 @@ const buildPrompt = () => {
       }
     }
     
-    // Pokročilá audio nastavení
-    if (allowVulgarity || allowOverlap) {
-      lines.push("");
-      lines.push("AUDIO STYL:");
-      if (allowVulgarity) {
-        lines.push("- Vulgarisms, sarcasm and raw humor are fully allowed.");
-        lines.push("- Target audience: adults 18+ only.");
-      }
-      if (allowOverlap) {
-        lines.push("- Include natural spontaneity: laughter, voice overlaps, pauses, reactions.");
-        lines.push("- Make dialogue sound authentic and unscripted.");
-      }
+    // Vyvážení rolí mluvčích
+    const speakerBalance = getValue("speakerBalance");
+    const structureLevel = getValue("structureLevel");
+    const silenceHandling = getValue("silenceHandling");
+    const implicitStructure = getChecked("implicitStructure");
+    const noMetaComments = getChecked("noMetaComments");
+    const subtleVulgarity = getChecked("subtleVulgarity");
+    
+    lines.push("");
+    lines.push("DYNAMIKA DIALOGU:");
+    
+    // Vyvážení mluvčích
+    if (speakerBalance === "speaker1_leads") {
+      lines.push("- Speaker 1 carries the main content and drives the conversation.");
+      lines.push("- Speaker 2 reacts, comments, asks clarifying questions, adds humor.");
+    } else if (speakerBalance === "speaker2_leads") {
+      lines.push("- Speaker 2 carries the main content and drives the conversation.");
+      lines.push("- Speaker 1 reacts, comments, asks clarifying questions, adds humor.");
+    } else {
+      lines.push("- Both speakers contribute equally to the content.");
+      lines.push("- Natural back-and-forth, balanced exchange of ideas.");
+    }
+    
+    // Míra struktury
+    if (structureLevel === "low") {
+      lines.push("- Structure: Very loose, feels like natural conversation with tangents.");
+    } else if (structureLevel === "high") {
+      lines.push("- Structure: Clear thematic blocks, but NO explicit chapter names or transitions.");
+    } else {
+      lines.push("- Structure: Medium - clear flow but organic transitions.");
+    }
+    
+    // Práce s tichem
+    if (silenceHandling === "minimum") {
+      lines.push("- Minimal pauses, keep the energy flowing.");
+    } else if (silenceHandling === "dramatic") {
+      lines.push("- Use meaningful silence when something lands hard. Let moments breathe.");
+    } else {
+      lines.push("- Natural pauses for emphasis and reflection.");
+    }
+    
+    // Pokročilá pravidla
+    lines.push("");
+    lines.push("PRAVIDLA PROJEVU:");
+    
+    if (implicitStructure) {
+      lines.push("- NEVER say 'now chapter', 'let's summarize', 'in this section'.");
+      lines.push("- Structure must be FELT from the flow, never announced.");
+    }
+    
+    if (noMetaComments) {
+      lines.push("- NO meta-commentary: never say 'in this podcast', 'as we discuss'.");
+      lines.push("- Stay fully IN CHARACTER. Speak only as the personas, never as hosts.");
+    }
+    
+    if (subtleVulgarity) {
+      lines.push("- Use natural Czech vulgarisms ONLY when it fits the moment.");
+      lines.push("- Not for shock value or constant comedy. Situational and authentic.");
+    }
+    
+    if (allowOverlap) {
+      lines.push("- Include natural spontaneity: laughter, voice overlaps, interruptions.");
+      lines.push("- Make dialogue sound authentic and unscripted.");
     }
   }
   

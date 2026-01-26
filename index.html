@@ -263,20 +263,65 @@
             </label>
             
             <label style="font-weight: 600; margin-top: 1rem; display: block;">
-              Pokročilé audio nastavení
+              Vyvážení rolí mluvčích
             </label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="speakerBalance" value="speaker1_leads" checked />
+                Mluvčí 1 nese obsah / Mluvčí 2 glosuje
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="speakerBalance" value="speaker2_leads" />
+                Mluvčí 2 nese obsah / Mluvčí 1 glosuje
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="speakerBalance" value="equal" />
+                Rovnocenné
+              </label>
+            </div>
+            
             <div class="row">
               <label>
-                <input type="checkbox" id="allowVulgarity" name="allowVulgarity" />
-                Povolit vulgarismy a drsný humor (18+)
+                Míra struktury
+                <select id="structureLevel" name="structureLevel">
+                  <option value="low">Nízká (přirozený rozhovor)</option>
+                  <option value="medium" selected>Střední (jasný tok)</option>
+                  <option value="high">Vysoká (výrazné bloky, bez názvů)</option>
+                </select>
               </label>
               <label>
-                <input type="checkbox" id="allowOverlap" name="allowOverlap" />
+                Práce s tichem
+                <select id="silenceHandling" name="silenceHandling">
+                  <option value="minimum">Minimum</option>
+                  <option value="natural" selected>Přirozeně</option>
+                  <option value="dramatic">Výrazně (jen když něco dolehne)</option>
+                </select>
+              </label>
+            </div>
+            
+            <label style="font-weight: 600; margin-top: 1rem; display: block;">
+              Pokročilé audio nastavení
+            </label>
+            <div class="checkbox-group">
+              <label class="checkbox-label" title="Model nesmí říkat 'teď kapitola', 'pojďme shrnout' – struktura má být jen cítit z toku řeči.">
+                <input type="checkbox" id="implicitStructure" name="implicitStructure" checked />
+                Struktura implicitní (bez pojmenování kapitol)
+              </label>
+              <label class="checkbox-label" title="Žádné komentáře typu 'v tomto podcastu', 'v této části'. Jen dialog postav.">
+                <input type="checkbox" id="noMetaComments" name="noMetaComments" checked />
+                Zákaz meta-komentářů (mluv jen v roli postav)
+              </label>
+              <label class="checkbox-label" title="Používej přirozené české vulgarismy jen když to sedí situaci, ne jako stand-up.">
+                <input type="checkbox" id="subtleVulgarity" name="subtleVulgarity" checked />
+                Vulgarismy situačně a střídmě
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="allowOverlap" name="allowOverlap" checked />
                 Překrývání hlasů, smích, spontánnost
               </label>
             </div>
             
-            <p class="helper">💡 Kombinace osobností, literárního stylu a filmové dynamiky vytváří unikátní audio zážitek.</p>
+            <p class="helper">💡 Tyto volby omezují metakomunikaci a vytvářejí autentičtější dialog.</p>
           </div>
           
           <!-- Vizuální styl - jen pro video -->
