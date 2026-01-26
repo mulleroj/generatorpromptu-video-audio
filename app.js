@@ -75,6 +75,123 @@ const narrationStyles = {
   }
 };
 
+// Osobnosti mluvčích pro audio
+const speakerPersonalities = {
+  "calm_explainer": {
+    label: "Klidný vysvětlovač",
+    desc: "Klidný, pomalý, strukturovaný projev. Jednoduché věty, logika, minimum emocí.",
+    instruction: "Speak calmly, slowly and in a structured way. Use simple sentences, logical connections and minimal emotions. Clarity is the priority."
+  },
+  "patient_teacher": {
+    label: "Trpělivý učitel",
+    desc: "Krok za krokem, občas zopakuje myšlenku jinými slovy. Příklady a krátké pauzy.",
+    instruction: "Explain step by step, occasionally repeat key ideas in different words. Use examples and short pauses."
+  },
+  "fact_analyst": {
+    label: "Faktický analytik",
+    desc: "Věcný, přesný, úsporný. Žádné metafory ani emoce. Fakta a souvislosti.",
+    instruction: "Speak factually, precisely and concisely. Avoid metaphors and emotional expressions. Prioritize facts and connections."
+  },
+  "enthusiastic_popularizer": {
+    label: "Nadšený popularizátor",
+    desc: "Energický a živý. Zdůrazňuje zajímavosti, pracuje s intonací a nadšením.",
+    instruction: "Speak energetically and vividly. Emphasize interesting points, work with intonation and light enthusiasm. Keep listener engaged."
+  },
+  "charismatic_lecturer": {
+    label: "Charismatický lektor",
+    desc: "Sebevědomý, plynulý projev. Jasné formulace, přirozená autorita, lehký humor.",
+    instruction: "Confident, fluent delivery. Clear formulations, natural authority, light humor without overdoing it."
+  },
+  "ironic_commentator": {
+    label: "Ironický glosátor",
+    desc: "Suchý humor, jemná ironie a nadhled. Komentuje realitu s odstupem, ale inteligentně.",
+    instruction: "Use dry humor, subtle irony and perspective. Comment on reality with distance but intelligence."
+  },
+  "sarcastic_observer": {
+    label: "Sarkastický pozorovatel",
+    desc: "Ostré poznámky, sarkasmus a cynický humor. Zachovává inteligenci a pointu.",
+    instruction: "Sharp remarks, sarcasm and cynical humor are allowed. Maintain intelligence and make a point."
+  },
+  "thoughtful_philosopher": {
+    label: "Zamyšlený filozof",
+    desc: "Pomalé tempo. Pracuje s otázkami, významem a tichem.",
+    instruction: "Slow down the pace. Work with questions, meaning and silence. Not everything needs an immediate answer."
+  },
+  "existential_narrator": {
+    label: "Existenciální vypravěč",
+    desc: "Zaměřuje se na smysl, identitu a nejistotu. Klidný, lehce introspektivní jazyk.",
+    instruction: "Focus on meaning, identity and uncertainty. Language is calm, slightly introspective."
+  },
+  "brutally_honest_critic": {
+    label: "Brutálně upřímný kritik",
+    desc: "Říká věci napřímo, bez obalu. Nezjemňuje nepohodlné závěry. Pravda před komfortem.",
+    instruction: "Say things directly, without softening. Don't sugar-coat uncomfortable conclusions. Prioritize truth over comfort."
+  },
+  "intellectual_skeptic": {
+    label: "Intelektuální skeptik",
+    desc: "Zpochybňuje samozřejmosti, analyzuje slabiny argumentů. Klidný, ale neústupný.",
+    instruction: "Question assumptions, analyze weaknesses in arguments. Calm but uncompromising tone."
+  },
+  "cosmic_observer": {
+    label: "Kosmický pozorovatel",
+    desc: "Odstup pozorovatele zvenčí. Lidské chování jako zvláštní experiment. Ironie a nadhled.",
+    instruction: "Speak with the distance of an outside observer. Describe human behavior as a strange experiment. Irony and perspective welcome."
+  },
+  "ai_entity_voice": {
+    label: "Digitální entita / AI hlas",
+    desc: "Precizní, systematický, lehce odosobněný projev. Emoce potlačené, struktura dominantní.",
+    instruction: "Precise, systematic and slightly detached delivery. Emotions suppressed, structure dominant."
+  }
+};
+
+// Literární styly pro audio
+const literaryStyles = {
+  "sober_essayistic": {
+    label: "Střízlivý esejistický styl",
+    instruction: "Use clear sentences, logical structure, minimal decoration. Essay-like clarity."
+  },
+  "satirical": {
+    label: "Satirický styl",
+    instruction: "Use exaggeration, contrast, intelligent mockery. Satirical edge throughout."
+  },
+  "poetic_minimalist": {
+    label: "Poetický minimalistický styl",
+    instruction: "Sparse language, powerful images. Say more with less."
+  },
+  "philosophical_essay": {
+    label: "Esejisticko-filozofický styl",
+    instruction: "Deeper reflections, work with meaning and significance. Philosophical depth."
+  },
+  "journalistic": {
+    label: "Publicistický styl",
+    instruction: "Brisk, commenting, readable. Journalistic flow and engagement."
+  }
+};
+
+// Filmové styly pro audio
+const filmStyles = {
+  "dynamic_dialogue": {
+    label: "Dynamický dialogový styl",
+    instruction: "Quick reactions, natural overlapping. Fast-paced dialogue like in film."
+  },
+  "slow_contemplative": {
+    label: "Pomalý kontemplativní styl",
+    instruction: "Long pauses, atmosphere. Contemplative, meditative pacing."
+  },
+  "chaotic_improv": {
+    label: "Chaotický improvizační styl",
+    instruction: "Associations, tangents, energy. Feels improvised and chaotic."
+  },
+  "dry_observational": {
+    label: "Suchý observační styl",
+    instruction: "Minimal emotions, strong subtext. Dry observation style."
+  },
+  "dramatic_narrator": {
+    label: "Dramatický vypravěčský styl",
+    instruction: "Build tension, gradation, punchlines. Dramatic storytelling style."
+  }
+};
+
 // Umělecké styly s kompletními popisy
 const artStyles = {
   "Frida Kahlo – expresivní symbolismus": {
@@ -191,9 +308,16 @@ const buildPrompt = () => {
     const speaker1personality = getValue("speaker1personality");
     const speaker2personality = getValue("speaker2personality");
     const audioContext = getValue("audioContext");
+    const literaryStyle = getValue("literaryStyle");
+    const filmStyle = getValue("filmStyle");
     const styleInspiration = getValue("styleInspiration");
     const allowVulgarity = getChecked("allowVulgarity");
     const allowOverlap = getChecked("allowOverlap");
+    
+    const personality1 = speakerPersonalities[speaker1personality];
+    const personality2 = speakerPersonalities[speaker2personality];
+    const literary = literaryStyles[literaryStyle];
+    const film = filmStyles[filmStyle];
     
     if (speaker1 || speaker2 || audioContext) {
       lines.push("");
@@ -201,15 +325,17 @@ const buildPrompt = () => {
       
       if (speaker1) {
         lines.push(`- Mluvčí 1: ${speaker1}`);
-        if (speaker1personality) {
-          lines.push(`  Osobnost: ${speaker1personality}`);
+        if (personality1) {
+          lines.push(`  Osobnost: ${personality1.label}`);
+          lines.push(`  → ${personality1.instruction}`);
         }
       }
       
       if (speaker2) {
         lines.push(`- Mluvčí 2: ${speaker2}`);
-        if (speaker2personality) {
-          lines.push(`  Osobnost: ${speaker2personality}`);
+        if (personality2) {
+          lines.push(`  Osobnost: ${personality2.label}`);
+          lines.push(`  → ${personality2.instruction}`);
         }
       }
       
@@ -222,6 +348,20 @@ const buildPrompt = () => {
       }
       
       lines.push("  → Maintain character consistency and dynamic throughout.");
+    }
+    
+    // Literární a filmový styl
+    if (literary || film) {
+      lines.push("");
+      lines.push("CHARAKTER PROJEVU:");
+      if (literary) {
+        lines.push(`- Literární styl: ${literary.label}`);
+        lines.push(`  → ${literary.instruction}`);
+      }
+      if (film) {
+        lines.push(`- Filmová dynamika: ${film.label}`);
+        lines.push(`  → ${film.instruction}`);
+      }
     }
     
     // Pokročilá audio nastavení
@@ -360,6 +500,20 @@ const updateArtStyleInfo = () => {
   const info = artStyles[style];
   if (info) {
     infoEl.textContent = `${info.visual} ${info.narration}`;
+  } else {
+    infoEl.textContent = "";
+  }
+};
+
+// Aktualizace info o osobnosti mluvčího (globální funkce pro onchange)
+window.updatePersonalityInfo = (speakerNum) => {
+  const select = document.getElementById(`speaker${speakerNum}personality`);
+  const infoEl = document.getElementById(`personality${speakerNum}Info`);
+  if (!select || !infoEl) return;
+  
+  const personality = speakerPersonalities[select.value];
+  if (personality) {
+    infoEl.innerHTML = `<strong>${personality.label}:</strong> ${personality.desc}`;
   } else {
     infoEl.textContent = "";
   }

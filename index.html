@@ -143,7 +143,7 @@
           <!-- Mluvčí - jen pro audio -->
           <div class="audio-only is-hidden">
             <label style="font-weight: 600; margin-top: 0.5rem; display: block;">
-              Mluvčí (volitelné)
+              Mluvčí
             </label>
             <div class="row">
               <label>
@@ -155,21 +155,107 @@
                 <input type="text" id="speaker2" name="speaker2" placeholder="Např. Kael, Marie, Host..." />
               </label>
             </div>
+            
             <div class="row">
-              <label>
-                Osobnost mluvčího 1
-                <input type="text" id="speaker1personality" name="speaker1personality" placeholder="Např. cynický, starší, zkušený..." />
-              </label>
-              <label>
-                Osobnost mluvčího 2
-                <input type="text" id="speaker2personality" name="speaker2personality" placeholder="Např. impulzivní, mladší, energický..." />
-              </label>
+              <div>
+                <label>
+                  Osobnost mluvčího 1
+                  <select id="speaker1personality" name="speaker1personality" onchange="updatePersonalityInfo(1)">
+                    <option value="">-- Vyberte osobnost --</option>
+                    <optgroup label="Neutrální / Informační">
+                      <option value="calm_explainer">Klidný vysvětlovač</option>
+                      <option value="patient_teacher">Trpělivý učitel</option>
+                      <option value="fact_analyst">Faktický analytik</option>
+                    </optgroup>
+                    <optgroup label="Energetické / Popularizační">
+                      <option value="enthusiastic_popularizer">Nadšený popularizátor</option>
+                      <option value="charismatic_lecturer">Charismatický lektor</option>
+                    </optgroup>
+                    <optgroup label="Humorné / Ironické">
+                      <option value="ironic_commentator">Ironický glosátor</option>
+                      <option value="sarcastic_observer">Sarkastický pozorovatel</option>
+                    </optgroup>
+                    <optgroup label="Filozofické / Hloubavé">
+                      <option value="thoughtful_philosopher">Zamyšlený filozof</option>
+                      <option value="existential_narrator">Existenciální vypravěč</option>
+                    </optgroup>
+                    <optgroup label="Kritické / Konfrontační">
+                      <option value="brutally_honest_critic">Brutálně upřímný kritik</option>
+                      <option value="intellectual_skeptic">Intelektuální skeptik</option>
+                    </optgroup>
+                    <optgroup label="Role / Narativní">
+                      <option value="cosmic_observer">Kosmický pozorovatel</option>
+                      <option value="ai_entity_voice">Digitální entita / AI hlas</option>
+                    </optgroup>
+                  </select>
+                </label>
+                <p id="personality1Info" class="style-info"></p>
+              </div>
+              <div>
+                <label>
+                  Osobnost mluvčího 2
+                  <select id="speaker2personality" name="speaker2personality" onchange="updatePersonalityInfo(2)">
+                    <option value="">-- Vyberte osobnost --</option>
+                    <optgroup label="Neutrální / Informační">
+                      <option value="calm_explainer">Klidný vysvětlovač</option>
+                      <option value="patient_teacher">Trpělivý učitel</option>
+                      <option value="fact_analyst">Faktický analytik</option>
+                    </optgroup>
+                    <optgroup label="Energetické / Popularizační">
+                      <option value="enthusiastic_popularizer">Nadšený popularizátor</option>
+                      <option value="charismatic_lecturer">Charismatický lektor</option>
+                    </optgroup>
+                    <optgroup label="Humorné / Ironické">
+                      <option value="ironic_commentator">Ironický glosátor</option>
+                      <option value="sarcastic_observer">Sarkastický pozorovatel</option>
+                    </optgroup>
+                    <optgroup label="Filozofické / Hloubavé">
+                      <option value="thoughtful_philosopher">Zamyšlený filozof</option>
+                      <option value="existential_narrator">Existenciální vypravěč</option>
+                    </optgroup>
+                    <optgroup label="Kritické / Konfrontační">
+                      <option value="brutally_honest_critic">Brutálně upřímný kritik</option>
+                      <option value="intellectual_skeptic">Intelektuální skeptik</option>
+                    </optgroup>
+                    <optgroup label="Role / Narativní">
+                      <option value="cosmic_observer">Kosmický pozorovatel</option>
+                      <option value="ai_entity_voice">Digitální entita / AI hlas</option>
+                    </optgroup>
+                  </select>
+                </label>
+                <p id="personality2Info" class="style-info"></p>
+              </div>
             </div>
             
             <label>
               Kontext/Scénář rozhovoru
               <textarea id="audioContext" name="audioContext" placeholder="Např. Dva mimozemšťané reagují na pozemský podcast. Právě zachytili přenos a komentují ho..."></textarea>
             </label>
+            
+            <div class="row">
+              <label>
+                Literární charakter projevu (volitelné)
+                <select id="literaryStyle" name="literaryStyle">
+                  <option value="">-- Bez specifikace --</option>
+                  <option value="sober_essayistic">Střízlivý esejistický styl</option>
+                  <option value="satirical">Satirický styl</option>
+                  <option value="poetic_minimalist">Poetický minimalistický styl</option>
+                  <option value="philosophical_essay">Esejisticko-filozofický styl</option>
+                  <option value="journalistic">Publicistický styl</option>
+                </select>
+              </label>
+              <label>
+                Filmová dynamika projevu (volitelné)
+                <select id="filmStyle" name="filmStyle">
+                  <option value="">-- Bez specifikace --</option>
+                  <option value="dynamic_dialogue">Dynamický dialogový styl</option>
+                  <option value="slow_contemplative">Pomalý kontemplativní styl</option>
+                  <option value="chaotic_improv">Chaotický improvizační styl</option>
+                  <option value="dry_observational">Suchý observační styl</option>
+                  <option value="dramatic_narrator">Dramatický vypravěčský styl</option>
+                </select>
+              </label>
+            </div>
             
             <label>
               Inspirace stylem (oddělte čárkou)
@@ -182,7 +268,7 @@
             <div class="row">
               <label>
                 <input type="checkbox" id="allowVulgarity" name="allowVulgarity" />
-                Povolit vulgarismy a drsný humor
+                Povolit vulgarismy a drsný humor (18+)
               </label>
               <label>
                 <input type="checkbox" id="allowOverlap" name="allowOverlap" />
@@ -190,7 +276,7 @@
               </label>
             </div>
             
-            <p class="helper">💡 Tyto pokročilé volby umožní vytvoření velmi autentického a živého rozhovoru pro dospělé publikum.</p>
+            <p class="helper">💡 Kombinace osobností, literárního stylu a filmové dynamiky vytváří unikátní audio zážitek.</p>
           </div>
           
           <!-- Vizuální styl - jen pro video -->
