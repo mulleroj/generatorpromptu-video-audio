@@ -527,6 +527,8 @@ const updateVideoVisibility = () => {
   document.querySelectorAll(".video-only").forEach((el) => {
     el.classList.toggle("is-hidden", !isVideo);
   });
+  // Přepni také output sekce
+  updateOutputSections();
 };
 
 // Aktualizace viditelnosti uměleckého stylu
@@ -658,32 +660,317 @@ const buildRoleLockBlock = (speaker1Name, speaker2Name) => {
   return lines;
 };
 
+// Generování promptu pro Audio - část CUSTOMIZE
+const buildAudioCustomizePrompt = () => {
+  const lines = [];
+  const topic = getValue("topic");
+  const duration = getValue("duration");
+  const language = getValue("outputLanguage");
+  const targetGroup = getValue("targetGroup");
+  const depthLevel = getValue("depthLevel");
+  const narrationStyle = getValue("narrationStyle");
+  const narrationTone = getValue("narrationTone");
+  const pacing = getValue("pacing");
+  const structure = getValue("structure");
+  const transitions = getValue("transitions");
+  const summaryAtEnd = getValue("summaryAtEnd");
+  const focusOn = getValue("focusOn");
+  const omit = getValue("omit");
+  const sourceHandling = getValue("sourceHandling");
+  const repetitionLevel = getValue("repetitionLevel");
+  
+  const selectedNarration = narrationStyles[narrationStyle];
+  
+  // Základní parametry
+  lines.push("ZÁKLADNÍ PARAMETRY:");
+  lines.push(`- Téma: ${topic}`);
+  lines.push(`- Délka: ${duration}`);
+  lines.push(`- Jazyk: ${language}`);
+  lines.push(`- Cílová skupina: ${targetGroup}`);
+  lines.push(`- Úroveň hloubky: ${depthLevel}`);
+  lines.push("");
+  
+  // Styl vyprávění
+  lines.push("STYL VYPRÁVĚNÍ:");
+  lines.push(`- Styl: ${narrationStyle}`);
+  if (selectedNarration) {
+    lines.push(`  → ${selectedNarration.prompt}`);
+  }
+  lines.push(`- Tón: ${narrationTone}`);
+  lines.push(`- Tempo: ${pacing}`);
+  lines.push("");
+  
+  // Dynamika dialogu
+  const speakerBalance = getValue("speakerBalance");
+  const structureLevel = getValue("structureLevel");
+  const silenceHandling = getValue("silenceHandling");
+  const implicitStructure = getChecked("implicitStructure");
+  const noMetaComments = getChecked("noMetaComments");
+  const subtleVulgarity = getChecked("subtleVulgarity");
+  const allowOverlap = getChecked("allowOverlap");
+  
+  lines.push("DYNAMIKA DIALOGU:");
+  
+  if (speakerBalance === "speaker1_leads") {
+    lines.push("- Mluvčí 1 nese hlavní obsah a vede konverzaci.");
+    lines.push("- Mluvčí 2 reaguje, komentuje, ptá se, přidává humor.");
+  } else if (speakerBalance === "speaker2_leads") {
+    lines.push("- Mluvčí 2 nese hlavní obsah a vede konverzaci.");
+    lines.push("- Mluvčí 1 reaguje, komentuje, ptá se, přidává humor.");
+  } else {
+    lines.push("- Oba mluvčí přispívají rovnocenně.");
+    lines.push("- Přirozená výměna názorů a myšlenek.");
+  }
+  
+  if (structureLevel === "low") {
+    lines.push("- Struktura: Volná, přirozený rozhovor s odbočkami.");
+  } else if (structureLevel === "high") {
+    lines.push("- Struktura: Jasné tematické bloky, ale BEZ pojmenování kapitol.");
+  } else {
+    lines.push("- Struktura: Střední - jasný tok, organické přechody.");
+  }
+  
+  if (silenceHandling === "minimum") {
+    lines.push("- Minimální pauzy, plynulá energie.");
+  } else if (silenceHandling === "dramatic") {
+    lines.push("- Používej výrazné ticho když něco dolehne. Nech momenty dýchat.");
+  } else {
+    lines.push("- Přirozené pauzy pro důraz a reflexi.");
+  }
+  lines.push("");
+  
+  // Pravidla projevu
+  lines.push("PRAVIDLA PROJEVU:");
+  
+  if (implicitStructure) {
+    lines.push("- NIKDY neříkej 'teď kapitola', 'pojďme shrnout', 'v této části'.");
+    lines.push("- Struktura musí být CÍTĚNA z toku řeči, nikdy oznamována.");
+  }
+  
+  if (noMetaComments) {
+    lines.push("- ŽÁDNÁ meta-komentáře: nikdy neříkej 'v tomto podcastu', 'jak probíráme'.");
+    lines.push("- Zůstaň PLNĚ V ROLI. Mluv pouze jako postavy, nikdy jako moderátoři.");
+  }
+  
+  if (subtleVulgarity) {
+    lines.push("- Používej české vulgarismy JEN když to sedí situaci.");
+    lines.push("- Ne pro šok nebo konstantní komedii. Situační a autentické.");
+  }
+  
+  if (allowOverlap) {
+    lines.push("- Zahrnuj přirozenou spontánnost: smích, překrývání hlasů, přerušení.");
+    lines.push("- Dialog musí znít autenticky a nescenárovaně.");
+  }
+  lines.push("");
+  
+  // Struktura
+  lines.push("STRUKTURA:");
+  lines.push(`- Členění: ${structure}`);
+  lines.push(`- Přechody: ${transitions}`);
+  lines.push(`- Shrnutí na konci: ${summaryAtEnd}`);
+  lines.push(`- Míra opakování: ${repetitionLevel}`);
+  lines.push("");
+  
+  // Řízení obsahu
+  lines.push("ŘÍZENÍ OBSAHU:");
+  lines.push(`- Práce se zdroji: ${sourceHandling}`);
+  if (focusOn) lines.push(`- Zaměřit se na: ${focusOn}`);
+  if (omit) lines.push(`- Vynechat: ${omit}`);
+  
+  // Audio-specifická omezení
+  lines.push("");
+  lines.push("⚠️ AUDIO OMEZENÍ:");
+  lines.push("- Žádné odkazy na vizuály ('jak vidíte na obrázku')");
+  lines.push("- Žádné členění podle slideů");
+  lines.push("- Vše musí fungovat čistě zvukově");
+  
+  return lines.join("\n");
+};
+
+// Generování promptu pro Audio - část ZDROJ (postavy)
+const buildAudioSourcePrompt = () => {
+  const lines = [];
+  const speaker1 = getValue("speaker1");
+  const speaker2 = getValue("speaker2");
+  const speaker1personality = getValue("speaker1personality");
+  const speaker2personality = getValue("speaker2personality");
+  const audioContext = getValue("audioContext");
+  const literaryStyle = getValue("literaryStyle");
+  const filmStyle = getValue("filmStyle");
+  const styleInspiration = getValue("styleInspiration");
+  
+  const personality1 = speakerPersonalities[speaker1personality];
+  const personality2 = speakerPersonalities[speaker2personality];
+  const literary = literaryStyles[literaryStyle];
+  const film = filmStyles[filmStyle];
+  
+  lines.push("=== CHARAKTERY MLUVČÍCH ===");
+  lines.push("");
+  
+  // Mluvčí 1
+  const name1 = speaker1 || "Mluvčí 1";
+  lines.push(`📌 ${name1.toUpperCase()}`);
+  if (personality1) {
+    lines.push(`Osobnost: ${personality1.label}`);
+    lines.push(`Charakteristika: ${personality1.desc}`);
+    lines.push(`Styl projevu: ${personality1.instruction}`);
+  }
+  
+  // ROLE LOCK pro mluvčího 1
+  const roleLockEnabled = getChecked("roleLockEnabled");
+  const speaker1gender = getValue("speaker1gender");
+  if (roleLockEnabled && speaker1gender) {
+    lines.push("");
+    if (speaker1gender === "male") {
+      lines.push(`🔒 ROLE LOCK: ${name1} je MUŽ.`);
+      lines.push(`   Mluví výhradně MUŽSKÝM hlasem a z MUŽSKÉ perspektivy.`);
+      lines.push(`   Používá důsledně mužské rodové tvary (řekl, udělal, byl jsem...).`);
+    } else {
+      lines.push(`🔒 ROLE LOCK: ${name1} je ŽENA.`);
+      lines.push(`   Mluví výhradně ŽENSKÝM hlasem a z ŽENSKÉ perspektivy.`);
+      lines.push(`   Používá důsledně ženské rodové tvary (řekla, udělala, byla jsem...).`);
+    }
+  }
+  lines.push("");
+  
+  // Mluvčí 2
+  const name2 = speaker2 || "Mluvčí 2";
+  lines.push(`📌 ${name2.toUpperCase()}`);
+  if (personality2) {
+    lines.push(`Osobnost: ${personality2.label}`);
+    lines.push(`Charakteristika: ${personality2.desc}`);
+    lines.push(`Styl projevu: ${personality2.instruction}`);
+  }
+  
+  // ROLE LOCK pro mluvčího 2
+  const speaker2gender = getValue("speaker2gender");
+  if (roleLockEnabled && speaker2gender) {
+    lines.push("");
+    if (speaker2gender === "male") {
+      lines.push(`🔒 ROLE LOCK: ${name2} je MUŽ.`);
+      lines.push(`   Mluví výhradně MUŽSKÝM hlasem a z MUŽSKÉ perspektivy.`);
+      lines.push(`   Používá důsledně mužské rodové tvary (řekl, udělal, byl jsem...).`);
+    } else {
+      lines.push(`🔒 ROLE LOCK: ${name2} je ŽENA.`);
+      lines.push(`   Mluví výhradně ŽENSKÝM hlasem a z ŽENSKÉ perspektivy.`);
+      lines.push(`   Používá důsledně ženské rodové tvary (řekla, udělala, byla jsem...).`);
+    }
+  }
+  lines.push("");
+  
+  // Kontext a scénář
+  if (audioContext) {
+    lines.push("=== SCÉNÁŘ / KONTEXT ===");
+    lines.push(audioContext);
+    lines.push("");
+  }
+  
+  // Literární a filmový styl
+  if (literary || film || styleInspiration) {
+    lines.push("=== INSPIRACE A STYL ===");
+    if (literary) {
+      lines.push(`Literární styl: ${literary.label}`);
+      lines.push(`→ ${literary.instruction}`);
+    }
+    if (film) {
+      lines.push(`Filmová dynamika: ${film.label}`);
+      lines.push(`→ ${film.instruction}`);
+    }
+    if (styleInspiration) {
+      lines.push(`Inspirace: ${styleInspiration}`);
+    }
+    lines.push("");
+  }
+  
+  // ROLE LOCK globální pravidla
+  if (roleLockEnabled) {
+    const enforceGenderForms = getChecked("enforceGenderForms");
+    const preventRoleSwitch = getChecked("preventRoleSwitch");
+    const autoCorrectRole = getChecked("autoCorrectRole");
+    
+    lines.push("=== ROLE LOCK - ZÁVAZNÁ PRAVIDLA ===");
+    lines.push("- Každý mluvčí musí po celou dobu dodržovat svou identitu a hlas.");
+    lines.push("- Mluvčí si nesmí přebírat repliky, role ani perspektivu.");
+    lines.push("- Každá replika musí být jasně přiřazena jednomu mluvčímu.");
+    
+    if (enforceGenderForms) {
+      lines.push("- V češtině VŽDY používej správné rodové tvary podle pohlaví.");
+    }
+    if (preventRoleSwitch) {
+      lines.push("- ZAKÁZÁNO přebírat styl, hlas nebo perspektivu druhého mluvčího.");
+    }
+    if (autoCorrectRole) {
+      lines.push("- Při porušení role se okamžitě vrať a pokračuj správně.");
+    }
+  }
+  
+  return lines.join("\n");
+};
+
+// Přepínání output sekcí podle typu média (function declaration pro hoisting)
+function updateOutputSections() {
+  const mediaType = getValue("mediaType");
+  const videoSection = document.getElementById("videoOutputSection");
+  const audioSection = document.getElementById("audioOutputSection");
+  
+  if (mediaType === "Audio") {
+    if (videoSection) videoSection.style.display = "none";
+    if (audioSection) audioSection.style.display = "block";
+  } else {
+    if (videoSection) videoSection.style.display = "block";
+    if (audioSection) audioSection.style.display = "none";
+  }
+}
+
 const updateOutput = () => {
   const topic = getValue("topic");
+  const mediaType = getValue("mediaType");
+  
+  // Přepni output sekce
+  updateOutputSections();
+  
   if (!topic) {
-    output.value = "Vyplňte téma a vygenerujte prompt.";
+    if (mediaType === "Audio") {
+      document.getElementById("audioCustomizeOutput").value = "Vyplňte téma a vygenerujte prompt.";
+      document.getElementById("audioSourceOutput").value = "";
+    } else {
+      output.value = "Vyplňte téma a vygenerujte prompt.";
+    }
     return;
   }
   
   // Validace ROLE LOCK - pohlaví musí být vyplněno
-  const mediaType = getValue("mediaType");
   const roleLockEnabled = getChecked("roleLockEnabled");
   if (mediaType === "Audio" && roleLockEnabled) {
     const speaker1gender = getValue("speaker1gender");
     const speaker2gender = getValue("speaker2gender");
     if (!speaker1gender || !speaker2gender) {
-      output.value = "⚠️ ROLE LOCK je zapnutý, ale nemáte vyplněné pohlaví mluvčích.\n\nPro správné fungování ROLE LOCK vyplňte pohlaví obou mluvčích, nebo vypněte ROLE LOCK.";
+      document.getElementById("audioCustomizeOutput").value = "⚠️ ROLE LOCK je zapnutý, ale nemáte vyplněné pohlaví mluvčích.\n\nPro správné fungování ROLE LOCK vyplňte pohlaví obou mluvčích, nebo vypněte ROLE LOCK.";
+      document.getElementById("audioSourceOutput").value = "";
       return;
     }
   }
   
   try {
-    const prompt = buildPrompt();
-    console.log("Generated prompt:", prompt);
-    output.value = prompt;
+    if (mediaType === "Audio") {
+      // Dva oddělené výstupy pro Audio
+      const customizePrompt = buildAudioCustomizePrompt();
+      const sourcePrompt = buildAudioSourcePrompt();
+      document.getElementById("audioCustomizeOutput").value = customizePrompt;
+      document.getElementById("audioSourceOutput").value = sourcePrompt;
+    } else {
+      // Jeden výstup pro Video
+      const prompt = buildPrompt();
+      output.value = prompt;
+    }
   } catch (error) {
     console.error("Error generating prompt:", error);
-    output.value = "Chyba při generování promptu. Zkontrolujte konzoli prohlížeče.";
+    if (mediaType === "Audio") {
+      document.getElementById("audioCustomizeOutput").value = "Chyba při generování promptu.";
+      document.getElementById("audioSourceOutput").value = "";
+    } else {
+      output.value = "Chyba při generování promptu. Zkontrolujte konzoli prohlížeče.";
+    }
   }
 };
 
@@ -714,6 +1001,26 @@ copyBtn.addEventListener("click", async () => {
   }
 });
 
+// Event listenery pro Audio copy buttons
+document.querySelectorAll(".copy-btn[data-target]").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    const targetId = btn.getAttribute("data-target");
+    const textarea = document.getElementById(targetId);
+    const statusEl = btn.nextElementSibling;
+    if (textarea) {
+      try {
+        await navigator.clipboard.writeText(textarea.value);
+        if (statusEl) {
+          statusEl.textContent = "✓ Zkopírováno";
+          setTimeout(() => { statusEl.textContent = ""; }, 2000);
+        }
+      } catch {
+        if (statusEl) statusEl.textContent = "Kopírování se nezdařilo.";
+      }
+    }
+  });
+});
+
 // Změna typu média - nyní řízeno přes inline onchange v HTML radio buttons
 
 // Změna vizuálního stylu
@@ -739,6 +1046,7 @@ document.getElementById("artStyle")?.addEventListener("change", () => {
 
 // Inicializace
 updateVideoVisibility();
+updateOutputSections();
 updateArtStyleVisibility();
 updateNarrationInfo();
 updateArtStyleInfo();
