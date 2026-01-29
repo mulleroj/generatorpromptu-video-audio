@@ -28,6 +28,8 @@
             <input type="radio" id="mediaVideo" name="mediaType" value="Video" checked onchange="
               document.querySelectorAll('.video-only').forEach(el => el.classList.remove('is-hidden'));
               document.querySelectorAll('.audio-only').forEach(el => el.classList.add('is-hidden'));
+              document.getElementById('videoOutputSection').style.display = 'block';
+              document.getElementById('audioOutputSection').style.display = 'none';
               if(window.updateOutput) updateOutput();
             ">
             <label for="mediaVideo">🎥 Video</label>
@@ -35,6 +37,8 @@
             <input type="radio" id="mediaAudio" name="mediaType" value="Audio" onchange="
               document.querySelectorAll('.video-only').forEach(el => el.classList.add('is-hidden'));
               document.querySelectorAll('.audio-only').forEach(el => el.classList.remove('is-hidden'));
+              document.getElementById('videoOutputSection').style.display = 'none';
+              document.getElementById('audioOutputSection').style.display = 'block';
               if(window.updateOutput) updateOutput();
             ">
             <label for="mediaAudio">🎙️ Audio</label>
