@@ -788,6 +788,61 @@ const buildAudioCustomizePrompt = () => {
   if (focusOn) lines.push(`- Zaměřit se na: ${focusOn}`);
   if (omit) lines.push(`- Vynechat: ${omit}`);
   
+  // ROLE LOCK pravidla (pokud je zapnutý)
+  const roleLockEnabled = getChecked("roleLockEnabled");
+  if (roleLockEnabled) {
+    const speaker1 = getValue("speaker1") || "Mluvčí 1";
+    const speaker2 = getValue("speaker2") || "Mluvčí 2";
+    const speaker1gender = getValue("speaker1gender");
+    const speaker2gender = getValue("speaker2gender");
+    const enforceGenderForms = getChecked("enforceGenderForms");
+    const preventRoleSwitch = getChecked("preventRoleSwitch");
+    const autoCorrectRole = getChecked("autoCorrectRole");
+    
+    lines.push("");
+    lines.push("=== ROLE LOCK - ZÁVAZNÁ PRAVIDLA ===");
+    lines.push("");
+    
+    // Mluvčí 1
+    if (speaker1gender === "male") {
+      lines.push(`🔒 ${speaker1} je MUŽ.`);
+      lines.push(`   - Mluví výhradně MUŽSKÝM hlasem a z MUŽSKÉ perspektivy.`);
+      lines.push(`   - Používá důsledně mužské rodové tvary (řekl, udělal, byl jsem...).`);
+    } else if (speaker1gender === "female") {
+      lines.push(`🔒 ${speaker1} je ŽENA.`);
+      lines.push(`   - Mluví výhradně ŽENSKÝM hlasem a z ŽENSKÉ perspektivy.`);
+      lines.push(`   - Používá důsledně ženské rodové tvary (řekla, udělala, byla jsem...).`);
+    }
+    lines.push("");
+    
+    // Mluvčí 2
+    if (speaker2gender === "male") {
+      lines.push(`🔒 ${speaker2} je MUŽ.`);
+      lines.push(`   - Mluví výhradně MUŽSKÝM hlasem a z MUŽSKÉ perspektivy.`);
+      lines.push(`   - Používá důsledně mužské rodové tvary (řekl, udělal, byl jsem...).`);
+    } else if (speaker2gender === "female") {
+      lines.push(`🔒 ${speaker2} je ŽENA.`);
+      lines.push(`   - Mluví výhradně ŽENSKÝM hlasem a z ŽENSKÉ perspektivy.`);
+      lines.push(`   - Používá důsledně ženské rodové tvary (řekla, udělala, byla jsem...).`);
+    }
+    lines.push("");
+    
+    // Globální pravidla
+    lines.push("GLOBÁLNÍ PRAVIDLA:");
+    lines.push("- Každý mluvčí musí po celou dobu dodržovat svou identitu a hlas.");
+    lines.push("- Mluvčí si nesmí přebírat repliky, role ani perspektivu.");
+    
+    if (enforceGenderForms) {
+      lines.push("- V češtině VŽDY používej správné rodové tvary podle pohlaví.");
+    }
+    if (preventRoleSwitch) {
+      lines.push("- ZAKÁZÁNO přebírat styl, hlas nebo perspektivu druhého mluvčího.");
+    }
+    if (autoCorrectRole) {
+      lines.push("- Při porušení role se okamžitě vrať a pokračuj správně.");
+    }
+  }
+  
   // Audio-specifická omezení
   lines.push("");
   lines.push("⚠️ AUDIO OMEZENÍ:");
@@ -891,28 +946,6 @@ const buildAudioSourcePrompt = () => {
       lines.push(`Inspirace: ${styleInspiration}`);
     }
     lines.push("");
-  }
-  
-  // ROLE LOCK globální pravidla
-  if (roleLockEnabled) {
-    const enforceGenderForms = getChecked("enforceGenderForms");
-    const preventRoleSwitch = getChecked("preventRoleSwitch");
-    const autoCorrectRole = getChecked("autoCorrectRole");
-    
-    lines.push("=== ROLE LOCK - ZÁVAZNÁ PRAVIDLA ===");
-    lines.push("- Každý mluvčí musí po celou dobu dodržovat svou identitu a hlas.");
-    lines.push("- Mluvčí si nesmí přebírat repliky, role ani perspektivu.");
-    lines.push("- Každá replika musí být jasně přiřazena jednomu mluvčímu.");
-    
-    if (enforceGenderForms) {
-      lines.push("- V češtině VŽDY používej správné rodové tvary podle pohlaví.");
-    }
-    if (preventRoleSwitch) {
-      lines.push("- ZAKÁZÁNO přebírat styl, hlas nebo perspektivu druhého mluvčího.");
-    }
-    if (autoCorrectRole) {
-      lines.push("- Při porušení role se okamžitě vrať a pokračuj správně.");
-    }
   }
   
   return lines.join("\n");
