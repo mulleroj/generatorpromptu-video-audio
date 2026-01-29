@@ -663,6 +663,17 @@ const buildRoleLockBlock = (speaker1Name, speaker2Name) => {
 // Generování promptu pro Audio - část CUSTOMIZE
 const buildAudioCustomizePrompt = () => {
   const lines = [];
+  
+  // Povinná instrukce na začátku
+  lines.push("⚠️ DŮLEŽITÉ:");
+  lines.push("Dokument SCÉNÁŘ není zdroj informací ke shrnutí, ale PŘÍSNÉ REŽIJNÍ ZADÁNÍ.");
+  lines.push("Vaším úkolem je tento dokument PŘEHRÁT (perform), nikoliv o něm referovat.");
+  lines.push("Nikdy nezmiňujte existenci scénáře ani jeho název.");
+  lines.push("Začněte rovnou první replikou v roli.");
+  lines.push("");
+  lines.push("---");
+  lines.push("");
+  
   const topic = getValue("topic");
   const duration = getValue("duration");
   const language = getValue("outputLanguage");
