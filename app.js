@@ -660,259 +660,147 @@ const buildRoleLockBlock = (speaker1Name, speaker2Name) => {
   return lines;
 };
 
-// Generování kompletního promptu pro Audio
+// Generování kompletního promptu pro Audio - PEVNÁ STRUKTURA
 const buildAudioPrompt = () => {
   const lines = [];
   
-  // Povinná instrukce na začátku
-  lines.push("⚠️ DŮLEŽITÉ:");
-  lines.push("Dokument SCÉNÁŘ není zdroj informací ke shrnutí, ale PŘÍSNÉ REŽIJNÍ ZADÁNÍ.");
-  lines.push("Vaším úkolem je tento dokument PŘEHRÁT (perform), nikoliv o něm referovat.");
-  lines.push("Nikdy nezmiňujte existenci scénáře ani jeho název.");
-  lines.push("Začněte rovnou první replikou v roli.");
-  lines.push("");
-  lines.push("---");
-  lines.push("");
-  
+  // Získání hodnot z formuláře
   const topic = getValue("topic");
-  const duration = getValue("duration");
-  const language = getValue("outputLanguage");
   const targetGroup = getValue("targetGroup");
   const depthLevel = getValue("depthLevel");
   const narrationStyle = getValue("narrationStyle");
   const narrationTone = getValue("narrationTone");
   const pacing = getValue("pacing");
-  const structure = getValue("structure");
-  const transitions = getValue("transitions");
-  const summaryAtEnd = getValue("summaryAtEnd");
   const focusOn = getValue("focusOn");
+  const notes = getValue("notes");
   const omit = getValue("omit");
-  const sourceHandling = getValue("sourceHandling");
-  const repetitionLevel = getValue("repetitionLevel");
-  
-  const selectedNarration = narrationStyles[narrationStyle];
-  
-  // Základní parametry
-  lines.push("ZÁKLADNÍ PARAMETRY:");
-  lines.push(`- Téma: ${topic}`);
-  lines.push(`- Délka: ${duration}`);
-  lines.push(`- Jazyk: ${language}`);
-  lines.push(`- Cílová skupina: ${targetGroup}`);
-  lines.push(`- Úroveň hloubky: ${depthLevel}`);
-  lines.push("");
-  
-  // Styl vyprávění
-  lines.push("STYL VYPRÁVĚNÍ:");
-  lines.push(`- Styl: ${narrationStyle}`);
-  if (selectedNarration) {
-    lines.push(`  → ${selectedNarration.prompt}`);
-  }
-  lines.push(`- Tón: ${narrationTone}`);
-  lines.push(`- Tempo: ${pacing}`);
-  lines.push("");
-  
-  // Dynamika dialogu
   const speakerBalance = getValue("speakerBalance");
-  const structureLevel = getValue("structureLevel");
-  const silenceHandling = getValue("silenceHandling");
-  const implicitStructure = getChecked("implicitStructure");
-  const noMetaComments = getChecked("noMetaComments");
-  const subtleVulgarity = getChecked("subtleVulgarity");
-  const allowOverlap = getChecked("allowOverlap");
+  const speaker1 = getValue("speaker1") || "Mluvčí 1";
+  const speaker2 = getValue("speaker2") || "Mluvčí 2";
+  const useExamples = getChecked("useExamples");
+  const useAnalogies = getChecked("useAnalogies");
+  const explainTerms = getChecked("explainTerms");
   
-  lines.push("DYNAMIKA DIALOGU:");
+  // Určení rolí mluvčích podle speakerBalance
+  let role1 = "vysvětlující, nositel obsahu";
+  let role2 = "reagující, doplňující, glosující";
   
-  if (speakerBalance === "speaker1_leads") {
-    lines.push("- Mluvčí 1 nese hlavní obsah a vede konverzaci.");
-    lines.push("- Mluvčí 2 reaguje, komentuje, ptá se, přidává humor.");
-  } else if (speakerBalance === "speaker2_leads") {
-    lines.push("- Mluvčí 2 nese hlavní obsah a vede konverzaci.");
-    lines.push("- Mluvčí 1 reaguje, komentuje, ptá se, přidává humor.");
-  } else {
-    lines.push("- Oba mluvčí přispívají rovnocenně.");
-    lines.push("- Přirozená výměna názorů a myšlenek.");
+  if (speakerBalance === "speaker2_leads") {
+    role1 = "reagující, doplňující, glosující";
+    role2 = "vysvětlující, nositel obsahu";
+  } else if (speakerBalance === "equal") {
+    role1 = "rovnocenný partner v dialogu";
+    role2 = "rovnocenný partner v dialogu";
   }
   
-  if (structureLevel === "low") {
-    lines.push("- Struktura: Volná, přirozený rozhovor s odbočkami.");
-  } else if (structureLevel === "high") {
-    lines.push("- Struktura: Jasné tematické bloky, ale BEZ pojmenování kapitol.");
-  } else {
-    lines.push("- Struktura: Střední - jasný tok, organické přechody.");
-  }
+  // Způsob vysvětlení
+  const explanationMethods = [];
+  if (useExamples) explanationMethods.push("příkladů z praxe");
+  if (useAnalogies) explanationMethods.push("přirovnání");
+  if (explainTerms) explanationMethods.push("vysvětlování pojmů");
+  const explanationText = explanationMethods.length > 0 
+    ? "pomocí " + explanationMethods.join(", ") 
+    : "srozumitelně a přístupně";
   
-  if (silenceHandling === "minimum") {
-    lines.push("- Minimální pauzy, plynulá energie.");
-  } else if (silenceHandling === "dramatic") {
-    lines.push("- Používej výrazné ticho když něco dolehne. Nech momenty dýchat.");
-  } else {
-    lines.push("- Přirozené pauzy pro důraz a reflexi.");
-  }
+  // === SEKCE 1: ROLE A SITUACE ===
+  lines.push("🧠 ROLE A SITUACE");
+  lines.push("");
+  lines.push("Jste 2 mluvčí v audio rozhovoru.");
+  lines.push("");
+  lines.push(`Mluvčí 1: ${speaker1} – ${role1}`);
+  lines.push("");
+  lines.push(`Mluvčí 2: ${speaker2} – ${role2}`);
+  lines.push("");
+  lines.push("Chovejte se přirozeně, jako při skutečném rozhovoru.");
+  lines.push("Mluvčí se nepředstavují, nemluví o sobě ani o tom, že jsou AI.");
   lines.push("");
   
-  // Pravidla projevu
-  lines.push("PRAVIDLA PROJEVU:");
-  
-  if (implicitStructure) {
-    lines.push("- NIKDY neříkej 'teď kapitola', 'pojďme shrnout', 'v této části'.");
-    lines.push("- Struktura musí být CÍTĚNA z toku řeči, nikdy oznamována.");
-  }
-  
-  if (noMetaComments) {
-    lines.push("- ŽÁDNÁ meta-komentáře: nikdy neříkej 'v tomto podcastu', 'jak probíráme'.");
-    lines.push("- Zůstaň PLNĚ V ROLI. Mluv pouze jako postavy, nikdy jako moderátoři.");
-  }
-  
-  if (subtleVulgarity) {
-    lines.push("- Používej české vulgarismy JEN když to sedí situaci.");
-    lines.push("- Ne pro šok nebo konstantní komedii. Situační a autentické.");
-  }
-  
-  if (allowOverlap) {
-    lines.push("- Zahrnuj přirozenou spontánnost: smích, překrývání hlasů, přerušení.");
-    lines.push("- Dialog musí znít autenticky a nescenárovaně.");
-  }
+  // === SEKCE 2: STYL VYPRÁVĚNÍ A JAZYK ===
+  lines.push("🎙️ STYL VYPRÁVĚNÍ A JAZYK");
+  lines.push("");
+  lines.push(`Používejte ${narrationStyle.toLowerCase()} jazyk:`);
+  lines.push("");
+  lines.push(`tón: ${narrationTone.toLowerCase()}`);
+  lines.push("");
+  lines.push(`tempo: ${pacing.toLowerCase()}`);
+  lines.push("");
+  lines.push("jazyk: přirozený, srozumitelný, bez akademického formalismu");
+  lines.push("");
+  lines.push(`Vysvětlujte pojmy ${explanationText}.`);
   lines.push("");
   
-  // Struktura
-  lines.push("STRUKTURA:");
-  lines.push(`- Členění: ${structure}`);
-  lines.push(`- Přechody: ${transitions}`);
-  lines.push(`- Shrnutí na konci: ${summaryAtEnd}`);
-  lines.push(`- Míra opakování: ${repetitionLevel}`);
+  // === SEKCE 3: ZAMĚŘENÍ OBSAHU ===
+  lines.push("🎯 ZAMĚŘENÍ OBSAHU");
+  lines.push("");
+  lines.push("Téma epizody:");
+  lines.push(topic);
+  lines.push("");
+  lines.push("Zaměřte se na:");
+  lines.push("");
+  lines.push(focusOn || "základní principy a praktické dopady");
+  lines.push("");
+  lines.push("Přizpůsobte výklad publiku:");
+  lines.push("");
+  lines.push(`cílová skupina: ${targetGroup}`);
+  lines.push("");
+  lines.push(`úroveň hloubky: ${depthLevel}`);
   lines.push("");
   
-  // Řízení obsahu
-  lines.push("ŘÍZENÍ OBSAHU:");
-  lines.push(`- Práce se zdroji: ${sourceHandling}`);
-  if (focusOn) lines.push(`- Zaměřit se na: ${focusOn}`);
-  if (omit) lines.push(`- Vynechat: ${omit}`);
+  // === SEKCE 4: OMEZENÍ A PRAVIDLA ===
+  lines.push("🚫 OMEZENÍ A PRAVIDLA");
+  lines.push("");
+  lines.push("Nemluvte o zdrojích, analýze dokumentů ani o struktuře rozhovoru");
+  lines.push("");
+  lines.push('Nepoužívejte meta-komentáře typu „v této části" nebo „teď si řekneme"');
+  lines.push("");
+  lines.push('Nemluvte k posluchači jako k „uživateli"');
+  lines.push("");
+  lines.push("Držte se role, nepřebírejte role druhého mluvčího");
+  lines.push("");
   
-  // ROLE LOCK pravidla (pokud je zapnutý)
+  // === SEKCE 5: STRUKTURA (IMPLICITNÍ) ===
+  lines.push("🧩 STRUKTURA (IMPLICITNÍ)");
+  lines.push("");
+  lines.push("Rozhovor má přirozený tok:");
+  lines.push("");
+  lines.push("krátký kontext → rozvinutí tématu → srozumitelné uzavření");
+  lines.push("Strukturu nepojmenovávejte nahlas.");
+  lines.push("");
+  
+  // === SEKCE 6: DODATEČNÉ INSTRUKCE (VOLITELNÉ) ===
+  const additionalInstructions = [];
+  if (omit) additionalInstructions.push(`vyhnout se: ${omit}`);
+  if (notes) additionalInstructions.push(notes);
+  if (useAnalogies) additionalInstructions.push("používat analogie");
+  if (useExamples) additionalInstructions.push("uvádět praktické příklady");
+  
+  // ROLE LOCK instrukce
   const roleLockEnabled = getChecked("roleLockEnabled");
   if (roleLockEnabled) {
-    const speaker1 = getValue("speaker1") || "Mluvčí 1";
-    const speaker2 = getValue("speaker2") || "Mluvčí 2";
     const speaker1gender = getValue("speaker1gender");
     const speaker2gender = getValue("speaker2gender");
-    const enforceGenderForms = getChecked("enforceGenderForms");
-    const preventRoleSwitch = getChecked("preventRoleSwitch");
-    const autoCorrectRole = getChecked("autoCorrectRole");
     
-    lines.push("");
-    lines.push("=== ROLE LOCK - ZÁVAZNÁ PRAVIDLA ===");
-    lines.push("");
-    
-    // Mluvčí 1
     if (speaker1gender === "male") {
-      lines.push(`🔒 ${speaker1} je MUŽ.`);
-      lines.push(`   - Mluví výhradně MUŽSKÝM hlasem a z MUŽSKÉ perspektivy.`);
-      lines.push(`   - Používá důsledně mužské rodové tvary (řekl, udělal, byl jsem...).`);
+      additionalInstructions.push(`${speaker1} je MUŽ – používá mužské rodové tvary (řekl, udělal, byl jsem)`);
     } else if (speaker1gender === "female") {
-      lines.push(`🔒 ${speaker1} je ŽENA.`);
-      lines.push(`   - Mluví výhradně ŽENSKÝM hlasem a z ŽENSKÉ perspektivy.`);
-      lines.push(`   - Používá důsledně ženské rodové tvary (řekla, udělala, byla jsem...).`);
+      additionalInstructions.push(`${speaker1} je ŽENA – používá ženské rodové tvary (řekla, udělala, byla jsem)`);
     }
-    lines.push("");
     
-    // Mluvčí 2
     if (speaker2gender === "male") {
-      lines.push(`🔒 ${speaker2} je MUŽ.`);
-      lines.push(`   - Mluví výhradně MUŽSKÝM hlasem a z MUŽSKÉ perspektivy.`);
-      lines.push(`   - Používá důsledně mužské rodové tvary (řekl, udělal, byl jsem...).`);
+      additionalInstructions.push(`${speaker2} je MUŽ – používá mužské rodové tvary (řekl, udělal, byl jsem)`);
     } else if (speaker2gender === "female") {
-      lines.push(`🔒 ${speaker2} je ŽENA.`);
-      lines.push(`   - Mluví výhradně ŽENSKÝM hlasem a z ŽENSKÉ perspektivy.`);
-      lines.push(`   - Používá důsledně ženské rodové tvary (řekla, udělala, byla jsem...).`);
+      additionalInstructions.push(`${speaker2} je ŽENA – používá ženské rodové tvary (řekla, udělala, byla jsem)`);
     }
-    lines.push("");
     
-    // Globální pravidla
-    lines.push("GLOBÁLNÍ PRAVIDLA:");
-    lines.push("- Každý mluvčí musí po celou dobu dodržovat svou identitu a hlas.");
-    lines.push("- Mluvčí si nesmí přebírat repliky, role ani perspektivu.");
-    
-    if (enforceGenderForms) {
-      lines.push("- V češtině VŽDY používej správné rodové tvary podle pohlaví.");
-    }
-    if (preventRoleSwitch) {
-      lines.push("- ZAKÁZÁNO přebírat styl, hlas nebo perspektivu druhého mluvčího.");
-    }
-    if (autoCorrectRole) {
-      lines.push("- Při porušení role se okamžitě vrať a pokračuj správně.");
-    }
+    additionalInstructions.push("Mluvčí si nesmí přebírat role ani perspektivu druhého");
   }
   
-  // Audio-specifická omezení
-  lines.push("");
-  lines.push("⚠️ AUDIO OMEZENÍ:");
-  lines.push("- Žádné odkazy na vizuály ('jak vidíte na obrázku')");
-  lines.push("- Žádné členění podle slideů");
-  lines.push("- Vše musí fungovat čistě zvukově");
-  
-  // === ČÁST 2: CHARAKTERY MLUVČÍCH ===
-  const speaker1 = getValue("speaker1");
-  const speaker2 = getValue("speaker2");
-  const speaker1personality = getValue("speaker1personality");
-  const speaker2personality = getValue("speaker2personality");
-  const audioContext = getValue("audioContext");
-  const literaryStyleVal = getValue("literaryStyle");
-  const filmStyleVal = getValue("filmStyle");
-  const styleInspiration = getValue("styleInspiration");
-  
-  const personality1 = speakerPersonalities[speaker1personality];
-  const personality2 = speakerPersonalities[speaker2personality];
-  const literary = literaryStyles[literaryStyleVal];
-  const film = filmStyles[filmStyleVal];
-  
-  lines.push("");
-  lines.push("========================================");
-  lines.push("=== CHARAKTERY MLUVČÍCH ===");
-  lines.push("========================================");
-  lines.push("");
-  
-  // Mluvčí 1
-  const name1 = speaker1 || "Mluvčí 1";
-  lines.push(`📌 ${name1.toUpperCase()}`);
-  if (personality1) {
-    lines.push(`Osobnost: ${personality1.label}`);
-    lines.push(`Charakteristika: ${personality1.desc}`);
-    lines.push(`Styl projevu: ${personality1.instruction}`);
-  }
-  lines.push("");
-  
-  // Mluvčí 2
-  const name2 = speaker2 || "Mluvčí 2";
-  lines.push(`📌 ${name2.toUpperCase()}`);
-  if (personality2) {
-    lines.push(`Osobnost: ${personality2.label}`);
-    lines.push(`Charakteristika: ${personality2.desc}`);
-    lines.push(`Styl projevu: ${personality2.instruction}`);
-  }
-  lines.push("");
-  
-  // Kontext a scénář
-  if (audioContext) {
-    lines.push("=== SCÉNÁŘ / KONTEXT ===");
-    lines.push(audioContext);
+  if (additionalInstructions.length > 0) {
+    lines.push("➕ DODATEČNÉ INSTRUKCE");
     lines.push("");
-  }
-  
-  // Literární a filmový styl
-  if (literary || film || styleInspiration) {
-    lines.push("=== INSPIRACE A STYL ===");
-    if (literary) {
-      lines.push(`Literární styl: ${literary.label}`);
-      lines.push(`→ ${literary.instruction}`);
-    }
-    if (film) {
-      lines.push(`Filmová dynamika: ${film.label}`);
-      lines.push(`→ ${film.instruction}`);
-    }
-    if (styleInspiration) {
-      lines.push(`Inspirace: ${styleInspiration}`);
-    }
-    lines.push("");
+    additionalInstructions.forEach(instruction => {
+      lines.push(`• ${instruction}`);
+    });
   }
   
   return lines.join("\n");
