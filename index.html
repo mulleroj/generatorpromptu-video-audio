@@ -28,8 +28,6 @@
             <input type="radio" id="mediaVideo" name="mediaType" value="Video" checked onchange="
               document.querySelectorAll('.video-only').forEach(el => el.classList.remove('is-hidden'));
               document.querySelectorAll('.audio-only').forEach(el => el.classList.add('is-hidden'));
-              document.getElementById('videoOutputSection').style.display = 'block';
-              document.getElementById('audioOutputSection').style.display = 'none';
               if(window.updateOutput) updateOutput();
             ">
             <label for="mediaVideo">🎥 Video</label>
@@ -37,8 +35,6 @@
             <input type="radio" id="mediaAudio" name="mediaType" value="Audio" onchange="
               document.querySelectorAll('.video-only').forEach(el => el.classList.add('is-hidden'));
               document.querySelectorAll('.audio-only').forEach(el => el.classList.remove('is-hidden'));
-              document.getElementById('videoOutputSection').style.display = 'none';
-              document.getElementById('audioOutputSection').style.display = 'block';
               if(window.updateOutput) updateOutput();
             ">
             <label for="mediaAudio">🎙️ Audio</label>
@@ -544,45 +540,16 @@
         </div>
       </form>
 
-      <!-- Video output -->
-      <section class="card output video-output" id="videoOutputSection">
+      <!-- Výstup promptu -->
+      <section class="card output">
         <header>
           <h2>Vygenerovaný prompt</h2>
-          <p>Zkopírujte a vložte do NotebookLM Studio → Customize.</p>
+          <p>Zkopírujte a vložte do NotebookLM Studio.</p>
         </header>
         <textarea id="promptOutput" rows="16" readonly></textarea>
         <div class="actions">
           <button type="button" id="copyBtn" class="secondary">Kopírovat</button>
           <span id="copyStatus" class="status" aria-live="polite"></span>
-        </div>
-      </section>
-      
-      <!-- Audio outputs - dvě okna -->
-      <section class="card output audio-output" id="audioOutputSection" style="display: none;">
-        <div class="dual-output">
-          <div class="output-box">
-            <header>
-              <h2>📋 Customize</h2>
-              <p>Vložit do NotebookLM Studio → <strong>Customize</strong></p>
-            </header>
-            <textarea id="audioCustomizeOutput" rows="14" readonly></textarea>
-            <div class="actions">
-              <button type="button" class="secondary copy-btn" data-target="audioCustomizeOutput">Kopírovat</button>
-              <span class="status" aria-live="polite"></span>
-            </div>
-          </div>
-          
-          <div class="output-box">
-            <header>
-              <h2>📄 Zdroj (Source)</h2>
-              <p>⚠️ <strong>Důležité!!!</strong> - Vložit do NotebookLM jako zdroj s názvem <strong>Scénář</strong></p>
-            </header>
-            <textarea id="audioSourceOutput" rows="14" readonly></textarea>
-            <div class="actions">
-              <button type="button" class="secondary copy-btn" data-target="audioSourceOutput">Kopírovat</button>
-              <span class="status" aria-live="polite"></span>
-            </div>
-          </div>
         </div>
       </section>
     </main>
