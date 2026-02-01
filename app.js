@@ -199,6 +199,19 @@ const filmStyles = {
 
 // Umělecké styly s kompletními popisy
 const artStyles = {
+  // 🎭 Emocionální / narativní styly
+  "Caravaggio – dramatický kontrast": {
+    visual: "Dramatický kontrast světla a tmy, chiaroscuro efekt.",
+    narration: "Silné příběhy, konflikty, morální dilemata.",
+    avoid: "Avoid flat lighting, cheerful colors.",
+    prompt: "Visual style inspired by Caravaggio: dramatic chiaroscuro, strong light-dark contrasts. Powerful storytelling about conflicts and moral dilemmas."
+  },
+  "Romantismus (Delacroix / Goya)": {
+    visual: "Emoce, pohyb, dramatické scény, dějiny jako drama.",
+    narration: "Emotivní, dramatické, pohnuté.",
+    avoid: "Avoid static compositions, cold rational approach.",
+    prompt: "Romantic visual style inspired by Delacroix and Goya: emotion, movement, dramatic scenes. History presented as drama with emotional depth."
+  },
   "Frida Kahlo – expresivní symbolismus": {
     visual: "Syté barvy, symbolické motivy, ručně působící ilustrace.",
     narration: "Osobní, metaforické, lidské vyprávění.",
@@ -210,6 +223,26 @@ const artStyles = {
     narration: "Plynulé, nadšené, obrazotvorné.",
     avoid: "Avoid sterile minimalist elements.",
     prompt: "Visual style inspired by Van Gogh: expressive brushstrokes, movement, texture. Flowing, enthusiastic narration."
+  },
+  "Edward Hopper – civilní realismus": {
+    visual: "Ticho, prostor, moderní každodennost.",
+    narration: "Pomalé, pozorovatelské.",
+    avoid: "Avoid dynamic effects, strong stylization.",
+    prompt: "Style inspired by Edward Hopper: quiet spaces, modern everyday life. Slow, observational narration."
+  },
+  
+  // 🧠 Myšlenkové / konceptuální styly
+  "Wassily Kandinsky – abstraktní struktura": {
+    visual: "Abstraktní tvary, barvy jako pojmy, struktura myšlenek.",
+    narration: "Pojmy, vztahy, ideje.",
+    avoid: "Avoid realistic imagery, literal representations.",
+    prompt: "Abstract visual style inspired by Kandinsky: shapes and colors representing concepts and ideas. Narration focused on relationships and abstract thinking."
+  },
+  "Bauhaus – infografická čistota": {
+    visual: "Geometrie, čisté linie, funkčnost, infografický přístup.",
+    narration: "Jasné, krokové, logické, systémové.",
+    avoid: "Avoid ornaments, decorative elements.",
+    prompt: "Bauhaus infographic style: clean geometry, functional design, systematic approach. Clear step-by-step logical explanation of processes."
   },
   "Pablo Picasso (kubismus) – analytická perspektiva": {
     visual: "Rozklad tvarů, více úhlů pohledu.",
@@ -223,11 +256,19 @@ const artStyles = {
     avoid: "Avoid literal imagery, technical diagrams.",
     prompt: "Surrealist style inspired by Magritte: symbolic, paradoxical imagery. Thought-provoking narration with contrasts."
   },
-  "Alfons Mucha – secesní didaktika": {
-    visual: "Ornamenty, dekorativní linie, secesní styl.",
-    narration: "Klidné, kultivované, vysvětlující.",
-    avoid: "Avoid modern tech-UI look.",
-    prompt: "Art Nouveau style inspired by Mucha: ornamental, decorative lines. Calm, cultivated explanatory narration."
+  
+  // 🏛️ Historicko-didaktické styly
+  "Renesanční ilustrace / da Vinci styl": {
+    visual: "Anatomické studie, technické skicy, vysvětlující kresby.",
+    narration: "Vysvětlování principů, technika, jak věci fungují.",
+    avoid: "Avoid modern graphics, abstract shapes.",
+    prompt: "Renaissance illustration style inspired by da Vinci: anatomical studies, technical sketches, explanatory drawings. Narration explaining principles and mechanisms."
+  },
+  "Barokní rytina / učebnicová grafika 18. stol.": {
+    visual: "Rytiny, křížové šrafování, učebnicové ilustrace.",
+    narration: "Vývoj, kauzalita, jak to funguje.",
+    avoid: "Avoid modern photography, digital effects.",
+    prompt: "Baroque engraving style: cross-hatching, textbook illustrations from 18th century. Narration focused on development, causality, how things work."
   },
   "Středověká iluminace / kronika": {
     visual: "Pergamen, ruční kresba, schémata.",
@@ -235,17 +276,39 @@ const artStyles = {
     avoid: "Avoid modern photos, contemporary graphics.",
     prompt: "Medieval illumination style: parchment textures, hand-drawn schemas. Chronicle-like storytelling narration."
   },
-  "Edward Hopper – civilní realismus": {
-    visual: "Ticho, prostor, moderní každodennost.",
-    narration: "Pomalé, pozorovatelské.",
-    avoid: "Avoid dynamic effects, strong stylization.",
-    prompt: "Style inspired by Edward Hopper: quiet spaces, modern everyday life. Slow, observational narration."
+  "Alfons Mucha – secesní didaktika": {
+    visual: "Ornamenty, dekorativní linie, secesní styl.",
+    narration: "Klidné, kultivované, vysvětlující.",
+    avoid: "Avoid modern tech-UI look.",
+    prompt: "Art Nouveau style inspired by Mucha: ornamental, decorative lines. Calm, cultivated explanatory narration."
   },
-  "Technický modernismus / Bauhaus": {
-    visual: "Geometrie, čisté linie, funkčnost.",
-    narration: "Jasné, krokové, logické.",
-    avoid: "Avoid ornaments, expressive colors.",
-    prompt: "Bauhaus/technical modernist style: clean geometry, functional design, clear lines. Clear, step-by-step logical narration."
+  
+  // 📰 Moderní výkladové styly
+  "Retro edukační plakáty 50.–60. let": {
+    visual: "Jasné barvy, jednoduché tvary, retro estetika, plakátový styl.",
+    narration: "Jasné sdělení, jednoduché metafory.",
+    avoid: "Avoid complex gradients, photorealistic elements.",
+    prompt: "Retro educational poster style from 1950s-60s: clear colors, simple shapes, vintage aesthetic. Clear messaging with simple metaphors."
+  },
+  "Whiteboard / ručně kreslené schéma": {
+    visual: "Ručně kreslené čáry, schémata, kroky, whiteboard estetika.",
+    narration: "Procesy, kroky, vysvětlování krok za krokem.",
+    avoid: "Avoid polished graphics, photographic elements.",
+    prompt: "Whiteboard hand-drawn style: sketchy lines, diagrams, step-by-step schemas. Narration explaining processes and steps clearly."
+  },
+  
+  // 🌍 Kulturně-stylové přístupy
+  "Japonská minimalistická ilustrace": {
+    visual: "Klid, rovnováha, prázdný prostor, minimalistické linie.",
+    narration: "Přehlednost, klid, harmonie.",
+    avoid: "Avoid cluttered compositions, loud colors.",
+    prompt: "Japanese minimalist illustration style: calm, balanced, empty space, clean lines. Clear, harmonious narration."
+  },
+  "Mexický lidový styl": {
+    visual: "Tradiční motivy, symboly, živé barvy, kulturní vzory.",
+    narration: "Tradice, symboly, kulturní rámec.",
+    avoid: "Avoid generic modern graphics.",
+    prompt: "Mexican folk art style: traditional motifs, symbols, vibrant colors, cultural patterns. Narration embedded in cultural context and traditions."
   }
 };
 
