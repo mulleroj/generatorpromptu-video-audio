@@ -28,6 +28,8 @@
             <input type="radio" id="mediaVideo" name="mediaType" value="Video" checked onchange="
               document.querySelectorAll('.video-only').forEach(el => el.classList.remove('is-hidden'));
               document.querySelectorAll('.audio-only').forEach(el => el.classList.add('is-hidden'));
+              document.getElementById('videoOutputSection').style.display = 'block';
+              document.getElementById('audioOutputSection').style.display = 'none';
               if(window.updateOutput) updateOutput();
             ">
             <label for="mediaVideo">🎥 Video</label>
@@ -35,6 +37,8 @@
             <input type="radio" id="mediaAudio" name="mediaType" value="Audio" onchange="
               document.querySelectorAll('.video-only').forEach(el => el.classList.add('is-hidden'));
               document.querySelectorAll('.audio-only').forEach(el => el.classList.remove('is-hidden'));
+              document.getElementById('videoOutputSection').style.display = 'none';
+              document.getElementById('audioOutputSection').style.display = 'block';
               if(window.updateOutput) updateOutput();
             ">
             <label for="mediaAudio">🎙️ Audio</label>
@@ -540,16 +544,45 @@
         </div>
       </form>
 
-      <!-- Výstup promptu -->
-      <section class="card output">
+      <!-- Audio výstup - jedno okno -->
+      <section class="card output audio-output" id="audioOutputSection" style="display: none;">
         <header>
-          <h2>Vygenerovaný prompt</h2>
+          <h2>Vygenerovaný prompt pro Audio</h2>
           <p>Zkopírujte a vložte do NotebookLM Studio.</p>
         </header>
         <textarea id="promptOutput" rows="16" readonly></textarea>
         <div class="actions">
           <button type="button" id="copyBtn" class="secondary">Kopírovat</button>
           <span id="copyStatus" class="status" aria-live="polite"></span>
+        </div>
+      </section>
+      
+      <!-- Video výstup - dvě okna -->
+      <section class="card output video-output" id="videoOutputSection">
+        <div class="dual-output">
+          <div class="output-box">
+            <header>
+              <h2>🎨 Vizuální styl</h2>
+              <p>Vložit do NotebookLM Studio → <strong>Describe a custom visual style</strong></p>
+            </header>
+            <textarea id="videoVisualOutput" rows="12" readonly></textarea>
+            <div class="actions">
+              <button type="button" class="secondary copy-btn" data-target="videoVisualOutput">Kopírovat</button>
+              <span class="status" aria-live="polite"></span>
+            </div>
+          </div>
+          
+          <div class="output-box">
+            <header>
+              <h2>🎯 AI moderátoři se zaměří</h2>
+              <p>Vložit do NotebookLM Studio → <strong>Customize</strong></p>
+            </header>
+            <textarea id="videoContentOutput" rows="12" readonly></textarea>
+            <div class="actions">
+              <button type="button" class="secondary copy-btn" data-target="videoContentOutput">Kopírovat</button>
+              <span class="status" aria-live="polite"></span>
+            </div>
+          </div>
         </div>
       </section>
     </main>

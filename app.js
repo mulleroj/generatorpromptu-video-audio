@@ -806,17 +806,74 @@ const buildAudioPrompt = () => {
   return lines.join("\n");
 };
 
-// Prázdná funkce pro zpětnou kompatibilitu
-function updateOutputSections() {
-  // Již není potřeba - používáme jeden výstup
-}
+// Generování Video promptu - část 1: VIZUÁLNÍ STYL
+const buildVideoVisualPrompt = () => {
+  const visualStyle = getValue("visualStyle");
+  const artStyle = getValue("artStyle");
+  const imageStyle = getValue("imageStyle");
+  const colorTone = getValue("colorTone");
+  const forbiddenElements = getValue("forbiddenElements");
+  
+  // Určení vizuálního stylu
+  let visualStyleText = visualStyle;
+  if (visualStyle === "Umělecký (vlastní)" && artStyle) {
+    visualStyleText = artStyle;
+  }
+  
+  const lines = [];
+  lines.push(`Vizualizace videa by měla mít styl: ${visualStyleText}.`);
+  lines.push("");
+  lines.push("Prosím, zahrň:");
+  lines.push(`- typ ilustrací: ${imageStyle}`);
+  lines.push(`- barevnou atmosféru: ${colorTone}`);
+  lines.push("");
+  lines.push("Vyhni se abstraktním dekorativním tvarům a prvkům, které odvádějí pozornost od obsahu.");
+  
+  if (forbiddenElements) {
+    lines.push("");
+    lines.push(`Dále se vyhni: ${forbiddenElements}`);
+  }
+  
+  return lines.join("\n");
+};
+
+// Generování Video promptu - část 2: AI MODERÁTOŘI SE ZAMĚŘÍ
+const buildVideoContentPrompt = () => {
+  const topic = getValue("topic");
+  const targetGroup = getValue("targetGroup");
+  const depthLevel = getValue("depthLevel");
+  const focusOn = getValue("focusOn");
+  const omit = getValue("omit");
+  
+  const lines = [];
+  lines.push(`Toto video má vysvětlit hlavní téma: ${topic}.`);
+  lines.push("");
+  lines.push(`Cílové publikum je: ${targetGroup}.`);
+  lines.push("");
+  lines.push(`Úroveň hloubky má být: ${depthLevel}.`);
+  lines.push("");
+  lines.push("Prosím, soustřeď se především na:");
+  lines.push(`- ${focusOn || "základní principy a praktické dopady"}`);
+  lines.push("");
+  lines.push("A neuváděj:");
+  lines.push(`- ${omit || "zbytečné detaily a odbočky"}`);
+  lines.push("");
+  lines.push("Použij jasný, přirozený výklad založený na přiložených zdrojích. Snaž se propojit klíčové body logicky a srozumitelně.");
+  
+  return lines.join("\n");
+};
 
 const updateOutput = () => {
   const topic = getValue("topic");
   const mediaType = getValue("mediaType");
   
   if (!topic) {
-    output.value = "Vyplňte téma a vygenerujte prompt.";
+    if (mediaType === "Audio") {
+      output.value = "Vyplňte téma a vygenerujte prompt.";
+    } else {
+      document.getElementById("videoVisualOutput").value = "Vyplňte téma a vygenerujte prompt.";
+      document.getElementById("videoContentOutput").value = "";
+    }
     return;
   }
   
@@ -832,16 +889,24 @@ const updateOutput = () => {
   }
   
   try {
-    let prompt;
     if (mediaType === "Audio") {
-      prompt = buildAudioPrompt();
+      const prompt = buildAudioPrompt();
+      output.value = prompt;
     } else {
-      prompt = buildPrompt();
+      // Video - dvě části
+      const visualPrompt = buildVideoVisualPrompt();
+      const contentPrompt = buildVideoContentPrompt();
+      document.getElementById("videoVisualOutput").value = visualPrompt;
+      document.getElementById("videoContentOutput").value = contentPrompt;
     }
-    output.value = prompt;
   } catch (error) {
     console.error("Error generating prompt:", error);
-    output.value = "Chyba při generování promptu. Zkontrolujte konzoli prohlížeče.";
+    if (mediaType === "Audio") {
+      output.value = "Chyba při generování promptu. Zkontrolujte konzoli prohlížeče.";
+    } else {
+      document.getElementById("videoVisualOutput").value = "Chyba při generování promptu.";
+      document.getElementById("videoContentOutput").value = "";
+    }
   }
 };
 
@@ -870,6 +935,26 @@ copyBtn.addEventListener("click", async () => {
   } catch {
     copyStatus.textContent = "Kopírování se nezdařilo.";
   }
+});
+
+// Event listenery pro Video copy buttons
+document.querySelectorAll(".copy-btn[data-target]").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    const targetId = btn.getAttribute("data-target");
+    const textarea = document.getElementById(targetId);
+    const statusEl = btn.nextElementSibling;
+    if (textarea) {
+      try {
+        await navigator.clipboard.writeText(textarea.value);
+        if (statusEl) {
+          statusEl.textContent = "✓ Zkopírováno";
+          setTimeout(() => { statusEl.textContent = ""; }, 2000);
+        }
+      } catch {
+        if (statusEl) statusEl.textContent = "Kopírování se nezdařilo.";
+      }
+    }
+  });
 });
 
 // Změna typu média - nyní řízeno přes inline onchange v HTML radio buttons
