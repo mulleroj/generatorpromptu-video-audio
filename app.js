@@ -923,8 +923,26 @@ resetBtn.addEventListener("click", () => {
   updateArtStyleVisibility();
   updateNarrationInfo();
   updateArtStyleInfo();
+  
+  // Reset Audio output
   output.value = "Vyplňte téma a vygenerujte prompt.";
   copyStatus.textContent = "";
+  
+  // Reset Video outputs
+  const videoVisualOutput = document.getElementById("videoVisualOutput");
+  const videoContentOutput = document.getElementById("videoContentOutput");
+  if (videoVisualOutput) videoVisualOutput.value = "Vyplňte téma a vygenerujte prompt.";
+  if (videoContentOutput) videoContentOutput.value = "";
+  
+  // Reset output sections visibility (Video is default)
+  const videoSection = document.getElementById("videoOutputSection");
+  const audioSection = document.getElementById("audioOutputSection");
+  if (videoSection) videoSection.style.display = "block";
+  if (audioSection) audioSection.style.display = "none";
+  
+  // Reset ROLE LOCK options visibility
+  const roleLockOptions = document.getElementById("roleLockOptions");
+  if (roleLockOptions) roleLockOptions.classList.remove("hidden");
 });
 
 copyBtn.addEventListener("click", async () => {
