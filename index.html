@@ -609,29 +609,61 @@
                 <input type="text" id="coGrammarCustom" name="coGrammarCustom" placeholder="např. mixed tenses, reported speech..." />
               </label>
             </div>
-            <div class="row">
+            <label>
+              Narrative Style
+              <select id="coNarrativeStyle" name="coNarrativeStyle">
+                <option value="storytelling">storytelling</option>
+                <option value="descriptive">descriptive</option>
+                <option value="instructional (teaching style)">instructional (teaching style)</option>
+                <option value="documentary">documentary</option>
+                <option value="conversational">conversational</option>
+              </select>
+            </label>
+            <label>
+              Vizuální styl (stejné jako u videa)
+              <select id="coVisualStyle" name="coVisualStyle">
+                <option value="Automatický">Automatický</option>
+                <option value="Minimalistický">Minimalistický</option>
+                <option value="Ilustrační">Ilustrační</option>
+                <option value="Retro / papírový">Retro / papírový</option>
+                <option value="Technický / Bauhaus">Technický / Bauhaus</option>
+                <option value="Umělecký (vlastní)">Umělecký (vlastní)</option>
+              </select>
+            </label>
+            <div id="coArtStyleWrapper" class="sub-field is-hidden">
               <label>
-                Narrative Style
-                <select id="coNarrativeStyle" name="coNarrativeStyle">
-                  <option value="storytelling">storytelling</option>
-                  <option value="descriptive">descriptive</option>
-                  <option value="instructional (teaching style)">instructional (teaching style)</option>
-                  <option value="documentary">documentary</option>
-                  <option value="conversational">conversational</option>
+                Umělecký styl
+                <select id="coArtStyle" name="coArtStyle">
+                  <optgroup label="🎭 Emocionální / narativní styly">
+                    <option value="Caravaggio – dramatický kontrast">Caravaggio – dramatický kontrast světla a tmy</option>
+                    <option value="Romantismus (Delacroix / Goya)">Romantismus (Delacroix / Goya)</option>
+                    <option value="Frida Kahlo – expresivní symbolismus">Frida Kahlo – expresivní symbolismus</option>
+                    <option value="Vincent van Gogh – dynamická expresivita">Vincent van Gogh – dynamická expresivita</option>
+                    <option value="Edward Hopper – civilní realismus">Edward Hopper – civilní realismus</option>
+                  </optgroup>
+                  <optgroup label="🧠 Myšlenkové / konceptuální styly">
+                    <option value="Wassily Kandinsky – abstraktní struktura">Wassily Kandinsky – abstraktní struktura myšlenek</option>
+                    <option value="Bauhaus – infografická čistota">Bauhaus – infografická čistota</option>
+                    <option value="Pablo Picasso (kubismus) – analytická perspektiva">Pablo Picasso (kubismus) – analytická perspektiva</option>
+                    <option value="René Magritte – surrealistický koncept">René Magritte – surrealistický koncept</option>
+                  </optgroup>
+                  <optgroup label="🏛️ Historicko-didaktické styly">
+                    <option value="Renesanční ilustrace / da Vinci styl">Renesanční ilustrace / da Vinci styl</option>
+                    <option value="Barokní rytina / učebnicová grafika 18. stol.">Barokní rytina / učebnicová grafika 18. stol.</option>
+                    <option value="Středověká iluminace / kronika">Středověká iluminace / kronika</option>
+                    <option value="Alfons Mucha – secesní didaktika">Alfons Mucha – secesní didaktika</option>
+                  </optgroup>
+                  <optgroup label="📰 Moderní výkladové styly">
+                    <option value="Retro edukační plakáty 50.–60. let">Retro edukační plakáty 50.–60. let</option>
+                    <option value="Whiteboard / ručně kreslené schéma">Whiteboard / ručně kreslené schéma</option>
+                  </optgroup>
+                  <optgroup label="🌍 Kulturně-stylové přístupy">
+                    <option value="Japonská minimalistická ilustrace">Japonská minimalistická ilustrace</option>
+                    <option value="Mexický lidový styl">Mexický lidový styl</option>
+                  </optgroup>
                 </select>
               </label>
-              <label>
-                Visual Style
-                <select id="coVisualStyle" name="coVisualStyle">
-                  <option value="realistic (live-action)">realistic (live-action)</option>
-                  <option value="cinematic film look">cinematic film look</option>
-                  <option value="documentary">documentary</option>
-                  <option value="animated">animated</option>
-                  <option value="hand-drawn illustration">hand-drawn illustration</option>
-                  <option value="futuristic">futuristic</option>
-                  <option value="retro">retro</option>
-                </select>
-              </label>
+              <p id="coArtStyleInfo" class="helper"></p>
             </div>
             <div class="row">
               <label>

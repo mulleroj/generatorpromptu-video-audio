@@ -638,7 +638,7 @@ const cinematicTemplates = {
     coGrammarFocus: "present simple",
     coGrammarCustom: "",
     coNarrativeStyle: "instructional (teaching style)",
-    coVisualStyle: "documentary",
+    coVisualStyle: "Ilustrační",
     coMood: "friendly",
     coCamera: ["wide shot", "medium shot", "close-up"],
     coCameraSequence: "Wide shot → medium shot → close-up",
@@ -653,7 +653,7 @@ const cinematicTemplates = {
     coGrammarFocus: "passive voice",
     coGrammarCustom: "",
     coNarrativeStyle: "instructional (teaching style)",
-    coVisualStyle: "realistic (live-action)",
+    coVisualStyle: "Technický / Bauhaus",
     coMood: "neutral",
     coCamera: ["medium shot", "close-up", "static camera"],
     coCameraSequence: "Medium shot → close-up → static shot",
@@ -793,12 +793,39 @@ const getCoCameraSequenceText = () => {
   return v || "not specified";
 };
 
+const toggleCoArtStyleVisibility = () => {
+  const wrap = document.getElementById("coArtStyleWrapper");
+  if (!wrap) return;
+  wrap.classList.toggle("is-hidden", getValue("coVisualStyle") !== "Umělecký (vlastní)");
+};
+
+const updateCoArtStyleInfo = () => {
+  const infoEl = document.getElementById("coArtStyleInfo");
+  if (!infoEl) return;
+  const style = getValue("coArtStyle");
+  const info = artStyles[style];
+  infoEl.textContent = info ? `${info.visual} ${info.narration}` : "";
+};
+
+const getCoVisualStyleText = () => {
+  const vs = getValue("coVisualStyle");
+  if (vs === "Umělecký (vlastní)") {
+    const art = getValue("coArtStyle");
+    const info = artStyles[art];
+    if (info) {
+      return `Umělecký (vlastní): ${art}. ${info.prompt}`;
+    }
+    return `Umělecký (vlastní): ${art}`;
+  }
+  return vs;
+};
+
 const buildCinematicOverviewPrompt = () => {
   const topic = getValue("coTopic");
   const lang = getValue("coLanguageLevel");
   const grammar = getCoGrammarText();
   const narrative = getValue("coNarrativeStyle");
-  const visual = getValue("coVisualStyle");
+  const visual = getCoVisualStyleText();
   const mood = getValue("coMood");
   const camera = getCoCameraText();
   const seq = getCoCameraSequenceText();
@@ -846,6 +873,11 @@ const applyCinematicTemplate = (key) => {
   toggleCoGrammarCustom();
   document.getElementById("coNarrativeStyle").value = t.coNarrativeStyle;
   document.getElementById("coVisualStyle").value = t.coVisualStyle;
+  if (t.coArtStyle) {
+    document.getElementById("coArtStyle").value = t.coArtStyle;
+  }
+  toggleCoArtStyleVisibility();
+  updateCoArtStyleInfo();
   document.getElementById("coMood").value = t.coMood;
   const cam = document.getElementById("coCamera");
   if (cam) {
@@ -907,6 +939,11 @@ const randomizeCinematicForm = () => {
   }
   randomFromSelect("coNarrativeStyle");
   randomFromSelect("coVisualStyle");
+  toggleCoArtStyleVisibility();
+  if (getValue("coVisualStyle") === "Umělecký (vlastní)") {
+    randomFromSelect("coArtStyle");
+  }
+  updateCoArtStyleInfo();
   randomFromSelect("coMood");
   const cam = document.getElementById("coCamera");
   if (cam) {
@@ -1354,6 +1391,13 @@ document.getElementById("coGrammarFocus")?.addEventListener("change", toggleCoGr
 
 document.getElementById("coCameraSequence")?.addEventListener("change", toggleCoCameraSequenceCustom);
 
+document.getElementById("coVisualStyle")?.addEventListener("change", () => {
+  toggleCoArtStyleVisibility();
+  updateCoArtStyleInfo();
+});
+
+document.getElementById("coArtStyle")?.addEventListener("change", updateCoArtStyleInfo);
+
 document.getElementById("coNegative")?.addEventListener("change", toggleCoNegativeCustom);
 
 document.getElementById("coTemplate")?.addEventListener("change", (e) => {
@@ -1388,6 +1432,8 @@ document.getElementById("coResetBtn")?.addEventListener("click", () => {
   document.getElementById("coTemplate").value = "";
   toggleCoGrammarCustom();
   toggleCoCameraSequenceCustom();
+  toggleCoArtStyleVisibility();
+  updateCoArtStyleInfo();
   toggleCoNegativeCustom();
   document.getElementById("cinematicOutput").value = "";
   document.getElementById("coCopyStatus").textContent = "";
@@ -1487,5 +1533,7 @@ updateNarrationInfo();
 updateArtStyleInfo();
 toggleCoGrammarCustom();
 toggleCoCameraSequenceCustom();
+toggleCoArtStyleVisibility();
+updateCoArtStyleInfo();
 toggleCoNegativeCustom();
 output.value = "Vyplňte téma a vygenerujte prompt.";
