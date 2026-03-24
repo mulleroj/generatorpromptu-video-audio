@@ -24,6 +24,27 @@ const getChecked = (id) => {
   return el ? el.checked : false;
 };
 
+function updateOutputSections() {
+  const media = document.querySelector('input[name="mediaType"]:checked')?.value || "Video";
+  const videoSec = document.getElementById("videoOutputSection");
+  const audioSec = document.getElementById("audioOutputSection");
+  const cinematicSec = document.getElementById("cinematicOutputSection");
+  if (!videoSec || !audioSec) return;
+  if (media === "CinematicOverview") {
+    videoSec.style.display = "none";
+    audioSec.style.display = "none";
+    if (cinematicSec) cinematicSec.style.display = "block";
+  } else if (media === "Audio") {
+    videoSec.style.display = "none";
+    audioSec.style.display = "block";
+    if (cinematicSec) cinematicSec.style.display = "none";
+  } else {
+    videoSec.style.display = "block";
+    audioSec.style.display = "none";
+    if (cinematicSec) cinematicSec.style.display = "none";
+  }
+}
+
 // Styly vyprávění s popisy
 const narrationStyles = {
   "Vysvětlující učitelský styl": {
@@ -594,6 +615,348 @@ const updateVideoVisibility = () => {
   updateOutputSections();
 };
 
+const updateMediaMode = () => {
+  const media = getValue("mediaType");
+  const studio = document.getElementById("studioFormContainer");
+  const cinematic = document.getElementById("cinematicFormContainer");
+  if (media === "CinematicOverview") {
+    studio?.classList.add("is-hidden");
+    cinematic?.classList.remove("is-hidden");
+    updateOutputSections();
+  } else {
+    studio?.classList.remove("is-hidden");
+    cinematic?.classList.add("is-hidden");
+    updateVideoVisibility();
+  }
+};
+
+// --- Cinematic Overview (NotebookLM) ---
+const cinematicTemplates = {
+  english: {
+    coTopic: "Daily routine",
+    coLanguageLevel: "B1 – Intermediate",
+    coGrammarFocus: "present simple",
+    coGrammarCustom: "",
+    coNarrativeStyle: "instructional (teaching style)",
+    coVisualStyle: "documentary",
+    coMood: "friendly",
+    coCamera: ["wide shot", "medium shot", "close-up"],
+    coCameraSequence: "Wide shot → medium shot → close-up",
+    coMusic: "ambient calm",
+    coPacing: "medium",
+    coAdditional: "simple vocabulary, clear examples, no subtitles",
+    coNegative: ["no subtitles", "no rapid cuts", "no chaotic camera movement"]
+  },
+  technical: {
+    coTopic: "Electric circuits basics",
+    coLanguageLevel: "B2 – Upper-intermediate",
+    coGrammarFocus: "passive voice",
+    coGrammarCustom: "",
+    coNarrativeStyle: "instructional (teaching style)",
+    coVisualStyle: "realistic (live-action)",
+    coMood: "neutral",
+    coCamera: ["medium shot", "close-up", "static camera"],
+    coCameraSequence: "Medium shot → close-up → static shot",
+    coMusic: "electronic background",
+    coPacing: "medium",
+    coAdditional: "labels on diagrams, step-by-step structure",
+    coNegative: ["no cartoonish style", "no surreal visuals", "no distracting background elements"]
+  }
+};
+
+const randomPools = {
+  topics: [
+    "Daily routine",
+    "Morning habits",
+    "Coffee culture",
+    "Electric circuits",
+    "Urban planning",
+    "Climate basics",
+    "Job interview tips",
+    "Travel vocabulary"
+  ],
+  cameraSequence: [
+    "Establishing shot → medium shot → close-up",
+    "Wide shot → medium shot → close-up",
+    "Wide shot → tracking shot → close-up",
+    "Close-up → medium shot → wide shot",
+    "Static shot → slow zoom → close-up",
+    "Panoramic shot → wide shot → medium shot",
+    "Drone shot → wide shot → close-up",
+    "Medium shot → close-up → static shot",
+    "Tracking shot → medium shot → close-up",
+    "Wide shot → panoramic shot → close-up",
+    "Close-up → tracking shot → wide shot",
+    "Static shot → medium shot → wide shot",
+    "Slow zoom → close-up → static shot",
+    "Wide shot → drone shot → panoramic shot",
+    "Medium shot → tracking shot → wide shot",
+    "Panoramic shot → close-up → static shot",
+    "Establishing shot → tracking shot → close-up",
+    "Wide shot → detail shot → close-up",
+    "Medium shot → detail shot → close-up"
+  ],
+  additional: [
+    "no subtitles, single scene",
+    "clear enunciation, simple vocabulary",
+    "one narrator voice, calm pacing"
+  ],
+  negativePresets: [
+    "no subtitles",
+    "no on-screen text",
+    "no extra labels",
+    "no fast zooms",
+    "no shaky camera",
+    "no chaotic camera movement",
+    "no rapid cuts",
+    "no excessive transitions",
+    "no overly dramatic effects",
+    "no dark horror mood",
+    "no cartoonish style",
+    "no surreal visuals",
+    "no distracting background elements",
+    "no advanced vocabulary",
+    "no slang",
+    "no idioms",
+    "no complex sentence structures",
+    "no grammar explanation",
+    "no off-topic scenes",
+    "no multiple storylines",
+    "no unnecessary characters"
+  ]
+};
+
+const toggleCoGrammarCustom = () => {
+  const sel = document.getElementById("coGrammarFocus");
+  const wrap = document.getElementById("coGrammarCustomWrap");
+  if (!sel || !wrap) return;
+  const show = sel.value === "custom";
+  wrap.classList.toggle("is-hidden", !show);
+};
+
+const toggleCoCameraSequenceCustom = () => {
+  const sel = document.getElementById("coCameraSequence");
+  const wrap = document.getElementById("coCameraSequenceCustomWrap");
+  if (!sel || !wrap) return;
+  const show = sel.value === "custom";
+  wrap.classList.toggle("is-hidden", !show);
+};
+
+const toggleCoNegativeCustom = () => {
+  const sel = document.getElementById("coNegative");
+  const wrap = document.getElementById("coNegativeCustomWrap");
+  if (!sel || !wrap) return;
+  const hasCustom = Array.from(sel.selectedOptions).some((o) => o.value === "custom");
+  wrap.classList.toggle("is-hidden", !hasCustom);
+};
+
+const getCoNegativeText = () => {
+  const sel = document.getElementById("coNegative");
+  if (!sel) return "(none)";
+  const picked = Array.from(sel.selectedOptions).map((o) => o.value);
+  if (picked.length === 0) return "(none)";
+  const hasCustom = picked.includes("custom");
+  const presets = picked.filter((v) => v !== "custom");
+  const customText = getValue("coNegativeCustom").trim();
+  const parts = [...presets];
+  if (hasCustom && customText) parts.push(customText);
+  if (hasCustom && !customText && presets.length === 0) return "custom (specify in field)";
+  if (hasCustom && !customText && presets.length > 0) {
+    return parts.join("; ");
+  }
+  if (!parts.length) return "(none)";
+  return parts.join("; ");
+};
+
+const getCoGrammarText = () => {
+  const focus = getValue("coGrammarFocus");
+  if (focus === "custom") {
+    const c = getValue("coGrammarCustom");
+    return c || "custom (specify in instructions)";
+  }
+  return focus;
+};
+
+const getCoCameraText = () => {
+  const sel = document.getElementById("coCamera");
+  if (!sel) return "not specified";
+  const picked = Array.from(sel.selectedOptions).map((o) => o.value);
+  return picked.length ? picked.join(", ") : "not specified";
+};
+
+const getCoCameraSequenceText = () => {
+  const v = getValue("coCameraSequence");
+  if (v === "custom") {
+    const c = getValue("coCameraSequenceCustom");
+    return c.trim() || "custom (specify above)";
+  }
+  return v || "not specified";
+};
+
+const buildCinematicOverviewPrompt = () => {
+  const topic = getValue("coTopic");
+  const lang = getValue("coLanguageLevel");
+  const grammar = getCoGrammarText();
+  const narrative = getValue("coNarrativeStyle");
+  const visual = getValue("coVisualStyle");
+  const mood = getValue("coMood");
+  const camera = getCoCameraText();
+  const seq = getCoCameraSequenceText();
+  const pacing = getValue("coPacing");
+  const music = getValue("coMusic");
+  const add = getValue("coAdditional").trim() || "(none)";
+  const neg = getCoNegativeText();
+
+  return [
+    "Create a cinematic educational video.",
+    "",
+    `Topic: ${topic}`,
+    `Target audience: learners at ${lang} level.`,
+    `Use language appropriate for ${lang}.`,
+    "",
+    `Grammar focus: ${grammar}`,
+    "",
+    `Narrative style: ${narrative}`,
+    "",
+    `Visual style: ${visual}`,
+    `Mood: ${mood}`,
+    "",
+    `Camera: ${camera}`,
+    `Camera sequence: ${seq}`,
+    "",
+    `Pacing: ${pacing}`,
+    "",
+    `Music: ${music}`,
+    "",
+    "Additional instructions:",
+    add,
+    "",
+    "Negative constraints:",
+    neg
+  ].join("\n");
+};
+
+const applyCinematicTemplate = (key) => {
+  const t = cinematicTemplates[key];
+  if (!t) return;
+  document.getElementById("coTopic").value = t.coTopic;
+  document.getElementById("coLanguageLevel").value = t.coLanguageLevel;
+  document.getElementById("coGrammarFocus").value = t.coGrammarFocus;
+  document.getElementById("coGrammarCustom").value = t.coGrammarCustom || "";
+  toggleCoGrammarCustom();
+  document.getElementById("coNarrativeStyle").value = t.coNarrativeStyle;
+  document.getElementById("coVisualStyle").value = t.coVisualStyle;
+  document.getElementById("coMood").value = t.coMood;
+  const cam = document.getElementById("coCamera");
+  if (cam) {
+    Array.from(cam.options).forEach((opt) => {
+      opt.selected = t.coCamera.includes(opt.value);
+    });
+  }
+  const seqEl = document.getElementById("coCameraSequence");
+  if (seqEl) {
+    const opt = Array.from(seqEl.options).find((o) => o.value === t.coCameraSequence);
+    if (opt) {
+      seqEl.value = t.coCameraSequence;
+      document.getElementById("coCameraSequenceCustom").value = "";
+    } else {
+      seqEl.value = "custom";
+      document.getElementById("coCameraSequenceCustom").value = t.coCameraSequence;
+    }
+    toggleCoCameraSequenceCustom();
+  }
+  document.getElementById("coMusic").value = t.coMusic;
+  document.getElementById("coPacing").value = t.coPacing;
+  document.getElementById("coAdditional").value = t.coAdditional;
+  const negSel = document.getElementById("coNegative");
+  if (negSel) {
+    Array.from(negSel.options).forEach((o) => { o.selected = false; });
+    const list = Array.isArray(t.coNegative) ? t.coNegative : String(t.coNegative).split(",").map((s) => s.trim()).filter(Boolean);
+    list.forEach((val) => {
+      const opt = Array.from(negSel.options).find((o) => o.value === val);
+      if (opt) opt.selected = true;
+    });
+    document.getElementById("coNegativeCustom").value = "";
+    toggleCoNegativeCustom();
+  }
+};
+
+const randomPick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+const randomFromSelect = (id) => {
+  const el = document.getElementById(id);
+  if (!el || el.options.length === 0) return;
+  const opts = Array.from(el.options);
+  const i = Math.floor(Math.random() * opts.length);
+  el.selectedIndex = i;
+};
+
+const randomizeCinematicForm = () => {
+  document.getElementById("coTopic").value = randomPick(randomPools.topics);
+  randomFromSelect("coLanguageLevel");
+  randomFromSelect("coGrammarFocus");
+  toggleCoGrammarCustom();
+  if (getValue("coGrammarFocus") === "custom") {
+    document.getElementById("coGrammarCustom").value = randomPick([
+      "mixed tenses",
+      "reported speech",
+      "conditionals in context"
+    ]);
+  } else {
+    document.getElementById("coGrammarCustom").value = "";
+  }
+  randomFromSelect("coNarrativeStyle");
+  randomFromSelect("coVisualStyle");
+  randomFromSelect("coMood");
+  const cam = document.getElementById("coCamera");
+  if (cam) {
+    Array.from(cam.options).forEach((o) => o.selected = false);
+    const indices = new Set();
+    const n = 2 + Math.floor(Math.random() * 3);
+    while (indices.size < Math.min(n, cam.options.length)) {
+      indices.add(Math.floor(Math.random() * cam.options.length));
+    }
+    indices.forEach((i) => { cam.options[i].selected = true; });
+  }
+  const seqSel = document.getElementById("coCameraSequence");
+  if (seqSel && seqSel.options.length > 1) {
+    seqSel.value = randomPick(randomPools.cameraSequence);
+    document.getElementById("coCameraSequenceCustom").value = "";
+    toggleCoCameraSequenceCustom();
+  }
+  randomFromSelect("coMusic");
+  randomFromSelect("coPacing");
+  document.getElementById("coAdditional").value = randomPick(randomPools.additional);
+  const negSel = document.getElementById("coNegative");
+  if (negSel) {
+    Array.from(negSel.options).forEach((o) => { o.selected = false; });
+    const pool = [...randomPools.negativePresets];
+    const n = 2 + Math.floor(Math.random() * 5);
+    const shuffled = pool.sort(() => Math.random() - 0.5);
+    shuffled.slice(0, Math.min(n, pool.length)).forEach((val) => {
+      const opt = Array.from(negSel.options).find((o) => o.value === val);
+      if (opt) opt.selected = true;
+    });
+  }
+  document.getElementById("coNegativeCustom").value = "";
+  toggleCoNegativeCustom();
+  document.getElementById("coTemplate").value = "";
+};
+
+const copyCinematicOutput = async (statusEl) => {
+  const out = document.getElementById("cinematicOutput");
+  if (!out?.value) return;
+  try {
+    await navigator.clipboard.writeText(out.value);
+    if (statusEl) {
+      statusEl.textContent = "✓ Zkopírováno";
+      setTimeout(() => { statusEl.textContent = ""; }, 2000);
+    }
+  } catch {
+    if (statusEl) statusEl.textContent = "Kopírování se nezdařilo.";
+  }
+};
+
 // Aktualizace viditelnosti uměleckého stylu
 const updateArtStyleVisibility = () => {
   const wrapper = document.getElementById("artStyleWrapper");
@@ -927,8 +1290,12 @@ const buildVideoContentPrompt = () => {
 };
 
 const updateOutput = () => {
-  const topic = getValue("topic");
   const mediaType = getValue("mediaType");
+  if (mediaType === "CinematicOverview") {
+    return;
+  }
+
+  const topic = getValue("topic");
   
   if (!topic) {
     if (mediaType === "Audio") {
@@ -974,6 +1341,58 @@ const updateOutput = () => {
 };
 
 // Event listeners
+document.querySelectorAll('input[name="mediaType"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    updateMediaMode();
+    if (getValue("mediaType") !== "CinematicOverview") {
+      updateOutput();
+    }
+  });
+});
+
+document.getElementById("coGrammarFocus")?.addEventListener("change", toggleCoGrammarCustom);
+
+document.getElementById("coCameraSequence")?.addEventListener("change", toggleCoCameraSequenceCustom);
+
+document.getElementById("coNegative")?.addEventListener("change", toggleCoNegativeCustom);
+
+document.getElementById("coTemplate")?.addEventListener("change", (e) => {
+  const v = e.target.value;
+  if (v === "english" || v === "technical") {
+    applyCinematicTemplate(v);
+  }
+});
+
+document.getElementById("cinematicForm")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const topic = getValue("coTopic");
+  if (!topic) {
+    document.getElementById("cinematicOutput").value = "Vyplňte téma (Topic).";
+    return;
+  }
+  const text = buildCinematicOverviewPrompt();
+  document.getElementById("cinematicOutput").value = text;
+  document.getElementById("cinematicOutput").focus();
+});
+
+document.getElementById("coCopyBtn")?.addEventListener("click", () => {
+  copyCinematicOutput(document.getElementById("coCopyStatus"));
+});
+
+document.getElementById("coRandomBtn")?.addEventListener("click", () => {
+  randomizeCinematicForm();
+});
+
+document.getElementById("coResetBtn")?.addEventListener("click", () => {
+  document.getElementById("cinematicForm")?.reset();
+  document.getElementById("coTemplate").value = "";
+  toggleCoGrammarCustom();
+  toggleCoCameraSequenceCustom();
+  toggleCoNegativeCustom();
+  document.getElementById("cinematicOutput").value = "";
+  document.getElementById("coCopyStatus").textContent = "";
+});
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   updateOutput();
@@ -1038,7 +1457,7 @@ document.querySelectorAll(".copy-btn[data-target]").forEach(btn => {
   });
 });
 
-// Změna typu média - nyní řízeno přes inline onchange v HTML radio buttons
+// Změna typu média: posluchače výše (updateMediaMode)
 
 // Změna vizuálního stylu
 const visualStyleSelect = document.getElementById("visualStyle");
@@ -1063,8 +1482,10 @@ document.getElementById("artStyle")?.addEventListener("change", () => {
 
 // Inicializace
 updateVideoVisibility();
-updateOutputSections();
 updateArtStyleVisibility();
 updateNarrationInfo();
 updateArtStyleInfo();
+toggleCoGrammarCustom();
+toggleCoCameraSequenceCustom();
+toggleCoNegativeCustom();
 output.value = "Vyplňte téma a vygenerujte prompt.";

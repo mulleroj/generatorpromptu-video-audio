@@ -42,7 +42,7 @@ body {
 }
 
 .container {
-  max-width: 720px;
+  max-width: 820px;
   margin: 0 auto;
   padding: 0 1.25rem;
 }
@@ -769,6 +769,62 @@ button.ghost:hover {
 }
 
 /* Responsive */
+
+/* Cinematic Overview */
+.media-toggle--main {
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.cinematic-card .section:first-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.cinematic-intro__text {
+  margin-bottom: 1rem;
+}
+
+.template-label {
+  margin-bottom: 0;
+}
+
+.select-multiple {
+  min-height: 8rem;
+  white-space: normal;
+  padding: 0.5rem;
+  background-image: none;
+  padding-right: 0.85rem;
+}
+
+.select-multiple option {
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+}
+
+.select-multiple option:checked {
+  background: linear-gradient(0deg, rgba(99, 102, 241, 0.35), rgba(99, 102, 241, 0.35));
+  color: var(--text);
+}
+
+.actions--cinematic {
+  flex-wrap: wrap;
+}
+
+#cinematicOutput {
+  min-height: 280px;
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+
+.cinematic-output header h2 {
+  font-size: 1.05rem;
+}
 
 @media (max-width: 480px) {
   .hero h1 {

@@ -12,37 +12,27 @@
         <p class="kicker">Video & Audio Prompt Builder</p>
         <h1>Generátor promptů pro NotebookLM Studio</h1>
         <p class="subtitle">
-          Vytvořte prompt pro video nebo audio. Zvolte základní parametry a styl — zbytek se doplní automaticky.
+          Vytvořte prompt pro video, audio nebo <strong>Cinematic Overview</strong>. Zvolte základní parametry a styl — zbytek se doplní automaticky.
         </p>
       </div>
     </header>
 
     <main class="container">
+      <div class="media-toggle media-toggle--main" role="tablist" aria-label="Režim generátoru">
+        <input type="radio" id="mediaVideo" name="mediaType" value="Video" checked />
+        <label for="mediaVideo">🎥 Video</label>
+        <input type="radio" id="mediaAudio" name="mediaType" value="Audio" />
+        <label for="mediaAudio">🎙️ Audio</label>
+        <input type="radio" id="mediaCinematic" name="mediaType" value="CinematicOverview" />
+        <label for="mediaCinematic">🎬 Cinematic Overview</label>
+      </div>
+
+      <div id="studioFormContainer">
       <form id="promptForm" class="card">
         
         <!-- 1. ZÁKLADY -->
         <div class="section">
           <h2>1. Základy</h2>
-          
-          <div class="media-toggle">
-            <input type="radio" id="mediaVideo" name="mediaType" value="Video" checked onchange="
-              document.querySelectorAll('.video-only').forEach(el => el.classList.remove('is-hidden'));
-              document.querySelectorAll('.audio-only').forEach(el => el.classList.add('is-hidden'));
-              document.getElementById('videoOutputSection').style.display = 'block';
-              document.getElementById('audioOutputSection').style.display = 'none';
-              if(window.updateOutput) updateOutput();
-            ">
-            <label for="mediaVideo">🎥 Video</label>
-            
-            <input type="radio" id="mediaAudio" name="mediaType" value="Audio" onchange="
-              document.querySelectorAll('.video-only').forEach(el => el.classList.add('is-hidden'));
-              document.querySelectorAll('.audio-only').forEach(el => el.classList.remove('is-hidden'));
-              document.getElementById('videoOutputSection').style.display = 'none';
-              document.getElementById('audioOutputSection').style.display = 'block';
-              if(window.updateOutput) updateOutput();
-            ">
-            <label for="mediaAudio">🎙️ Audio</label>
-          </div>
           
           <div class="row">
             
@@ -562,6 +552,216 @@
           <button type="button" class="ghost" id="resetBtn">Reset</button>
         </div>
       </form>
+      </div>
+
+      <div id="cinematicFormContainer" class="is-hidden">
+        <form id="cinematicForm" class="card cinematic-card" novalidate>
+          <div class="section cinematic-intro">
+            <h2>Cinematic Overview</h2>
+            <p class="helper cinematic-intro__text">
+              Prompt pro modul <strong>Cinematic Overview</strong> v NotebookLM. Vyplňte parametry a zkopírujte výstup do studia.
+            </p>
+            <label class="template-label">
+              Přednastavená šablona
+              <select id="coTemplate" name="coTemplate">
+                <option value="">— Vlastní —</option>
+                <option value="english">English lesson</option>
+                <option value="technical">Technical training</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="section">
+            <label>
+              Topic
+              <input type="text" id="coTopic" name="coTopic" placeholder="např. Daily routine, Electric circuits..." required />
+            </label>
+            <div class="row">
+              <label>
+                Language Level
+                <select id="coLanguageLevel" name="coLanguageLevel">
+                  <option value="A1 – Beginner">A1 – Beginner</option>
+                  <option value="A2 – Elementary">A2 – Elementary</option>
+                  <option value="B1 – Intermediate" selected>B1 – Intermediate</option>
+                  <option value="B2 – Upper-intermediate">B2 – Upper-intermediate</option>
+                  <option value="C1 – Advanced">C1 – Advanced</option>
+                  <option value="C2 – Proficient">C2 – Proficient</option>
+                </select>
+              </label>
+              <label>
+                Grammar Focus
+                <select id="coGrammarFocus" name="coGrammarFocus">
+                  <option value="none">none</option>
+                  <option value="present simple">present simple</option>
+                  <option value="present continuous">present continuous</option>
+                  <option value="past simple">past simple</option>
+                  <option value="future (will / going to)">future (will / going to)</option>
+                  <option value="conditionals">conditionals</option>
+                  <option value="passive voice">passive voice</option>
+                  <option value="phrasal verbs">phrasal verbs</option>
+                  <option value="custom">custom</option>
+                </select>
+              </label>
+            </div>
+            <div id="coGrammarCustomWrap" class="sub-field is-hidden">
+              <label>
+                Vlastní gramatika
+                <input type="text" id="coGrammarCustom" name="coGrammarCustom" placeholder="např. mixed tenses, reported speech..." />
+              </label>
+            </div>
+            <div class="row">
+              <label>
+                Narrative Style
+                <select id="coNarrativeStyle" name="coNarrativeStyle">
+                  <option value="storytelling">storytelling</option>
+                  <option value="descriptive">descriptive</option>
+                  <option value="instructional (teaching style)">instructional (teaching style)</option>
+                  <option value="documentary">documentary</option>
+                  <option value="conversational">conversational</option>
+                </select>
+              </label>
+              <label>
+                Visual Style
+                <select id="coVisualStyle" name="coVisualStyle">
+                  <option value="realistic (live-action)">realistic (live-action)</option>
+                  <option value="cinematic film look">cinematic film look</option>
+                  <option value="documentary">documentary</option>
+                  <option value="animated">animated</option>
+                  <option value="hand-drawn illustration">hand-drawn illustration</option>
+                  <option value="futuristic">futuristic</option>
+                  <option value="retro">retro</option>
+                </select>
+              </label>
+            </div>
+            <div class="row">
+              <label>
+                Mood / Atmosphere
+                <select id="coMood" name="coMood">
+                  <option value="neutral">neutral</option>
+                  <option value="friendly">friendly</option>
+                  <option value="upbeat">upbeat</option>
+                  <option value="dramatic">dramatic</option>
+                  <option value="nostalgic">nostalgic</option>
+                  <option value="tense">tense</option>
+                </select>
+              </label>
+              <label>
+                Pacing
+                <select id="coPacing" name="coPacing">
+                  <option value="slow">slow</option>
+                  <option value="medium" selected>medium</option>
+                  <option value="fast">fast</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              Camera Style (vyberte jednu nebo více)
+              <select id="coCamera" name="coCamera" multiple size="6" class="select-multiple">
+                <option value="close-up">close-up</option>
+                <option value="medium shot">medium shot</option>
+                <option value="wide shot">wide shot</option>
+                <option value="panoramic shot">panoramic shot</option>
+                <option value="slow zoom">slow zoom</option>
+                <option value="static camera">static camera</option>
+                <option value="tracking shot">tracking shot</option>
+                <option value="drone shot">drone shot</option>
+                <option value="cinematic depth of field">cinematic depth of field</option>
+              </select>
+            </label>
+            <p class="helper">Držte Ctrl (Windows) nebo ⌘ (Mac) pro výběr více položek.</p>
+            <label>
+              Camera Sequence
+              <select id="coCameraSequence" name="coCameraSequence">
+                <option value="Establishing shot → medium shot → close-up">Establishing shot → medium shot → close-up</option>
+                <option value="Wide shot → medium shot → close-up" selected>Wide shot → medium shot → close-up</option>
+                <option value="Wide shot → tracking shot → close-up">Wide shot → tracking shot → close-up</option>
+                <option value="Close-up → medium shot → wide shot">Close-up → medium shot → wide shot</option>
+                <option value="Static shot → slow zoom → close-up">Static shot → slow zoom → close-up</option>
+                <option value="Panoramic shot → wide shot → medium shot">Panoramic shot → wide shot → medium shot</option>
+                <option value="Drone shot → wide shot → close-up">Drone shot → wide shot → close-up</option>
+                <option value="Medium shot → close-up → static shot">Medium shot → close-up → static shot</option>
+                <option value="Tracking shot → medium shot → close-up">Tracking shot → medium shot → close-up</option>
+                <option value="Wide shot → panoramic shot → close-up">Wide shot → panoramic shot → close-up</option>
+                <option value="Close-up → tracking shot → wide shot">Close-up → tracking shot → wide shot</option>
+                <option value="Static shot → medium shot → wide shot">Static shot → medium shot → wide shot</option>
+                <option value="Slow zoom → close-up → static shot">Slow zoom → close-up → static shot</option>
+                <option value="Wide shot → drone shot → panoramic shot">Wide shot → drone shot → panoramic shot</option>
+                <option value="Medium shot → tracking shot → wide shot">Medium shot → tracking shot → wide shot</option>
+                <option value="Panoramic shot → close-up → static shot">Panoramic shot → close-up → static shot</option>
+                <option value="Establishing shot → tracking shot → close-up">Establishing shot → tracking shot → close-up</option>
+                <option value="Wide shot → detail shot → close-up">Wide shot → detail shot → close-up</option>
+                <option value="Medium shot → detail shot → close-up">Medium shot → detail shot → close-up</option>
+                <option value="custom">Custom sequence</option>
+              </select>
+            </label>
+            <div id="coCameraSequenceCustomWrap" class="sub-field is-hidden">
+              <label>
+                Vlastní sekvence záběrů
+                <input type="text" id="coCameraSequenceCustom" name="coCameraSequenceCustom" placeholder="např. wide shot → insert shot → close-up" />
+              </label>
+            </div>
+            <div class="row">
+              <label>
+                Music / Sound
+                <select id="coMusic" name="coMusic">
+                  <option value="none">none</option>
+                  <option value="ambient calm">ambient calm</option>
+                  <option value="cinematic orchestral">cinematic orchestral</option>
+                  <option value="dramatic strings">dramatic strings</option>
+                  <option value="upbeat pop">upbeat pop</option>
+                  <option value="electronic background">electronic background</option>
+                  <option value="rap beat / hip-hop">rap beat / hip-hop</option>
+                  <option value="lo-fi chill">lo-fi chill</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              Additional Instructions
+              <textarea id="coAdditional" name="coAdditional" rows="2" placeholder="např. no subtitles, single scene, simple vocabulary..."></textarea>
+            </label>
+            <label>
+              Negative Constraints (vyberte jednu nebo více)
+              <select id="coNegative" name="coNegative" multiple size="10" class="select-multiple">
+                <option value="no subtitles">no subtitles</option>
+                <option value="no on-screen text">no on-screen text</option>
+                <option value="no extra labels">no extra labels</option>
+                <option value="no fast zooms">no fast zooms</option>
+                <option value="no shaky camera">no shaky camera</option>
+                <option value="no chaotic camera movement">no chaotic camera movement</option>
+                <option value="no rapid cuts">no rapid cuts</option>
+                <option value="no excessive transitions">no excessive transitions</option>
+                <option value="no overly dramatic effects">no overly dramatic effects</option>
+                <option value="no dark horror mood">no dark horror mood</option>
+                <option value="no cartoonish style">no cartoonish style</option>
+                <option value="no surreal visuals">no surreal visuals</option>
+                <option value="no distracting background elements">no distracting background elements</option>
+                <option value="no advanced vocabulary">no advanced vocabulary</option>
+                <option value="no slang">no slang</option>
+                <option value="no idioms">no idioms</option>
+                <option value="no complex sentence structures">no complex sentence structures</option>
+                <option value="no grammar explanation">no grammar explanation</option>
+                <option value="no off-topic scenes">no off-topic scenes</option>
+                <option value="no multiple storylines">no multiple storylines</option>
+                <option value="no unnecessary characters">no unnecessary characters</option>
+                <option value="custom">Custom negative constraint</option>
+              </select>
+            </label>
+            <p class="helper">Držte Ctrl (Windows) nebo ⌘ (Mac) pro výběr více položek.</p>
+            <div id="coNegativeCustomWrap" class="sub-field is-hidden">
+              <label>
+                Vlastní negativní omezení
+                <input type="text" id="coNegativeCustom" name="coNegativeCustom" placeholder="např. no watermarks, no stock footage..." />
+              </label>
+            </div>
+          </div>
+
+          <div class="actions actions--cinematic">
+            <button type="submit" class="primary" id="coGenerateBtn">Generate prompt</button>
+            <button type="button" class="ghost" id="coRandomBtn">Randomize</button>
+            <button type="button" class="ghost" id="coResetBtn">Reset</button>
+          </div>
+        </form>
+      </div>
 
       <!-- Audio výstup - jedno okno -->
       <section class="card output audio-output" id="audioOutputSection" style="display: none;">
@@ -602,6 +802,18 @@
               <span class="status" aria-live="polite"></span>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="card output cinematic-output" id="cinematicOutputSection" style="display: none;">
+        <header>
+          <h2>Cinematic Overview — prompt</h2>
+          <p>Zkopírujte do NotebookLM (Cinematic Overview).</p>
+        </header>
+        <textarea id="cinematicOutput" rows="22" readonly class="cinematic-output-text"></textarea>
+        <div class="actions">
+          <button type="button" class="secondary" id="coCopyBtn">Copy to clipboard</button>
+          <span id="coCopyStatus" class="status" aria-live="polite"></span>
         </div>
       </section>
     </main>
